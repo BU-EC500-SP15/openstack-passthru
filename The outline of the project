@@ -17,7 +17,7 @@ All of our group members will be working on all 4 parts of our project, but we w
 3.Discuss Scope
      Right now, we'll firstly focus on implementation and management of one service-which is to be decided(most probably Nova)-that offered by 
 BU's openstack instance.That is, one openstack instance and single service.We're going to build an application and make it runs well.
-     After this, we're going to try other services like Swift and Cinder.Moreover,dealing with multiple providers is also in our scope.This requires
+     After this, we're going to try we implement an Openstack API endpoint that services requests by calling another Openstack API endpoint which will be acheived by a pass-through implementation for services like Swift and Cinder.Moreover,dealing with multiple providers is also in our scope.This requires
 the application be extensive for new users and new service providers.
      
 4.Things to explore:‏

@@ -43,7 +43,7 @@ def get_account(con):
 		#print "wetwerewr"
 		#print result
 		#print type(result)
-		return str(result), 200
+		return str(headers), 200
 		#return str(result),200
 	except ClientException as e:
 		print e.msg		
@@ -56,11 +56,11 @@ def get_object(con,container,obj):  ### for download an object from the containe
                 headers,result = con.get_object(container, obj)
 		return str(headers),200
         except ClientException as e:
-		print e.msg
+		
                 return e.msg, e.http_status
         else:
 		
-                return "", 204
+                return "object find", 204
 
 from flask import Flask, request
 app = Flask(__name__)
@@ -90,7 +90,7 @@ def func2(container):
 
 @app.route("/<container>/<obj>", methods=['PUT', 'DELETE', 'GET', 'POST', 'HEAD'])
 def func3(container, obj):
-        if request.mothod == 'GET':
+        if request.mothod=='GET':
 		
                 con=connect_swift()
                 return get_object(con,container,obj)
@@ -102,4 +102,4 @@ def bluh():
         return "", 204
 
 if __name__ == "__main__":
-        app.run(None,5001,None)
+        app.run()

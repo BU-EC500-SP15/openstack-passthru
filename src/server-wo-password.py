@@ -50,6 +50,16 @@ def get_account(con):
 		return e.msg, e.http_status
 	else:
 		"", 204
+def get_object(con,container,obj):  ### for download an object from the container
+        try:
+		
+                con.get_object(container, obj)
+        except ClientException as e:
+		
+                return e.msg, e.http_status
+        else:
+		
+                return "object find", 204
 
 from flask import Flask, request
 app = Flask(__name__)
@@ -79,7 +89,12 @@ def func2(container):
 
 @app.route("/<container>/<obj>", methods=['PUT', 'DELETE', 'GET', 'POST', 'HEAD'])
 def func3(container, obj):
-        return "Not Yet Implemented", 501
+        if request.mothod=='GET':
+		
+                con=connect_swift()
+                return get_object(con,container,obj)
+        else:
+        	return "Not Yet Implemented", 501
 
 @app.route("/", methods=['GET'])
 def bluh():

@@ -1,8 +1,8 @@
 import os
 import socket
 from swiftclient import client
-usr = 'estherlu'
-key = '31415926'
+usr = 'ddt0523'
+key = 'ddt0523'
 authurl = 'http://140.247.152.207:35357/v2.0'
 ten = 'EC500-openstack-passthru'
 
@@ -43,7 +43,7 @@ def get_account(con):
 		#print "wetwerewr"
 		#print result
 		#print type(result)
-		return str(headers), 200
+		return str(result), 200
 		#return str(result),200
 	except ClientException as e:
 		print e.msg		
@@ -53,13 +53,14 @@ def get_account(con):
 def get_object(con,container,obj):  ### for download an object from the container
         try:
 		
-                con.get_object(container, obj)
+                headers,result = con.get_object(container, obj)
+		return str(headers),200
         except ClientException as e:
-		
+		print e.msg
                 return e.msg, e.http_status
         else:
 		
-                return "object find", 204
+                return "", 204
 
 from flask import Flask, request
 app = Flask(__name__)
@@ -89,7 +90,7 @@ def func2(container):
 
 @app.route("/<container>/<obj>", methods=['PUT', 'DELETE', 'GET', 'POST', 'HEAD'])
 def func3(container, obj):
-        if request.mothod=='GET':
+        if request.mothod == 'GET':
 		
                 con=connect_swift()
                 return get_object(con,container,obj)
@@ -101,4 +102,4 @@ def bluh():
         return "", 204
 
 if __name__ == "__main__":
-        app.run()
+        app.run(None,5001,None)

@@ -54,7 +54,7 @@ def get_object(con,container,obj):  ### for download an object from the containe
         try:
 		
                 headers,result = con.get_object(container, obj)
-		return str(headers),200
+		return str(result),200
         except ClientException as e:
 		
                 return e.msg, e.http_status
@@ -64,28 +64,28 @@ def get_object(con,container,obj):  ### for download an object from the containe
 
 ################### Update contaner, object, and account require testing                
 def update_containerMetaData(con, container): ###update container metadata 
-		try:
-			con.post_container(container)
-		except ClientException as e:
+	try:
+		con.post_container(container)
+	except ClientException as e:
                 return e.msg, e.http_status
-		else:
-			return "", 204
+	else:
+		return "", 204
 
 def update_objectMetaData(con, container, obj): ###update objects metadata
-		try:
-			con.post_object(container, obj)
-		except ClientException as e:
+	try:
+		con.post_object(container, obj)
+	except ClientException as e:
                 return e.msg, e.http_status
-		else:
-			return "", 204
+	else:
+		return "", 204
 			
 def update_accountMetaData(con): ###update objects metadata- Not sure if its implemented properly
-		try:
-			con.post_account()
-		except ClientException as e:
+	try:
+		con.post_account()
+	except ClientException as e:
                 return e.msg, e.http_status
-		else:
-			return "", 204
+	else:
+		return "", 204
 			
 
 def upload_object(con, container,obj,objct):		###method to upload the objects in container.	
@@ -140,7 +140,7 @@ def func2(container):
                 return "Not yet implemented", 501
 
 
-@app.route("/<container>/<obj>", methods=[ 'PUT', 'DELETE', 'GET', 'POST', 'HEAD'])
+@app.route("/<container>/<obj>", methods=[ 'PUT', 'DELETE', 'GET', 'POST', 'HEAD', 'COPY'])
 def func3(container, obj):
         if request.method=='GET':
 		
@@ -153,6 +153,15 @@ def func3(container, obj):
 	elif request.method == 'DELETE':			###method to delete an object from a container.
 		con = connect_swift()
 		return delete_object(con,container,obj)
+	elif request.method == 'COPY':   ###method to copy an object
+		
+		con = connect_swift()
+		p=request.headers.get('Destination')
+		p1=str(p).split('/')
+		#print p1
+		header,result = con.get_object(container,obj)
+		return upload_object(con,p1[1],p1[2],result)
+
         else:
         	return "Not Yet Implemented", 501
 

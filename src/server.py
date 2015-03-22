@@ -1,8 +1,8 @@
 import os
 import socket
 from swiftclient import client
-usr = 'george'
-key = '[passwordhere]'
+usr = 'singh1'
+key = ''		#change it to [passwordhere] before puting the code on github.
 authurl = 'http://140.247.152.207:35357/v2.0'
 ten = 'EC500-openstack-passthru'
 

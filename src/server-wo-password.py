@@ -62,6 +62,31 @@ def get_object(con,container,obj):  ### for download an object from the containe
 		
                 return "object find", 204
 
+################### Update contaner, object, and account require testing                
+def update_containerMetaData(con, container): ###update container metadata 
+		try:
+			con.post_container(container)
+		except ClientException as e:
+                return e.msg, e.http_status
+		else:
+			return "", 204
+
+def update_objectMetaData(con, container, obj): ###update objects metadata
+		try:
+			con.post_object(container, obj)
+		except ClientException as e:
+                return e.msg, e.http_status
+		else:
+			return "", 204
+			
+def update_accountMetaData(con): ###update objects metadata- Not sure if its implemented properly
+		try:
+			con.post_account()
+		except ClientException as e:
+                return e.msg, e.http_status
+		else:
+			return "", 204
+			
 from flask import Flask, request
 app = Flask(__name__)
 
@@ -70,6 +95,10 @@ def func1():
 	if request.method == 'GET':
 		con = connect_swift()
 		return get_account(con)
+	elif request.method == 'POST':
+		con = connect_swift()
+		return update_accountMetaData(con)
+	
 	else:
 		return "Not yet implemented", 501
 
@@ -77,13 +106,13 @@ def func1():
 def func2(container):
         if request.method == 'PUT':
                 con = connect_swift()
-                return create_container(con, container)
+        	   return create_container(con, container)
         elif request.method == 'DELETE':
                 con = connect_swift()
-                return delete_container(con, container)
+        		return delete_container(con, container)
 	elif request.method == 'GET':
 		con = connect_swift()
-		return get_container(con, container)
+			return get_container(con, container)
         else:
                 return "Not yet implemented", 501
 

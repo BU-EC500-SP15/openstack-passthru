@@ -107,6 +107,35 @@ def delete_object(con,container,obj):			###method to delete the objects in conta
 	else:
 
                 return "", 204
+              
+def head_account(con):### show account metadata
+                try:
+			headers=con.head_account()
+			##print headers
+			return str(headers),200
+		except ClientException as e:
+			print e.msg
+			return e.msg,e.http_status
+		else:
+			return "",204
+
+def head_container(con,container):### show container metadata
+                try:
+			headers=con.head_container(container)
+			##print headers
+			return str(headers),200
+		except ClientException as e:
+			return e.msg,e.http_status
+		else:
+			return "",204
+def head_object(con,container,obj):### show object metadata
+                try:
+			headers=con.head_object(container,obj)
+			return headers,200
+		except ClientException as e:
+			return e.msg,e.http_status
+		else:
+			return "",204
 
 ##################################################################################################### flask:
 
@@ -121,6 +150,11 @@ def func1():
 	elif request.method == 'POST':
 		con = connect_swift()
 		return update_accountMetaData(con)
+	elif request.method=='Head':
+ 		con=connect_swift()
+		head =  head_account(con)
+		print head
+		return head
 	
 	else:
 		return "Not yet implemented", 501
@@ -136,6 +170,10 @@ def func2(container):
 	elif request.method == 'GET':
 		con = connect_swift()
 		return get_container(con, container)
+	
+	elif request.method=='HEAD':
+		con=connect_swift()
+		return head_container(con,container)
         else:
                 return "Not yet implemented", 501
 
@@ -161,6 +199,10 @@ def func3(container, obj):
 		#print p1
 		header,result = con.get_object(container,obj)
 		return upload_object(con,p1[1],p1[2],result)
+	elif request.method=='HEAD':
+		con=connect_swift()
+		return get_object(con,container,obj)
+	
 
         else:
         	return "Not Yet Implemented", 501

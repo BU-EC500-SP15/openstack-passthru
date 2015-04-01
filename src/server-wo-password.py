@@ -43,7 +43,7 @@ def get_account(con):
 		#print "wetwerewr"
 		#print result
 		#print type(result)
-		return str(headers), 200
+		return str(result), 200
 		#return str(result),200
 	except ClientException as e:
 		print e.msg		
@@ -63,25 +63,25 @@ def get_object(con,container,obj):  ### for download an object from the containe
                 return "object find", 204
 
 ################### Update contaner, object, and account require testing                
-def update_containerMetaData(con, container): ###update container metadata 
+def update_containerMetaData(con, container,headers): ###update container metadata 
 	try:
-		con.post_container(container)
+		con.post_container(container,headers)
 	except ClientException as e:
                 return e.msg, e.http_status
 	else:
 		return "", 204
 
-def update_objectMetaData(con, container, obj): ###update objects metadata
+def update_objectMetaData(con, container, obj,headers): ###update objects metadata
 	try:
-		con.post_object(container, obj)
+		con.post_object(container, obj,headers)
 	except ClientException as e:
                 return e.msg, e.http_status
 	else:
 		return "", 204
 			
-def update_accountMetaData(con): ###update objects metadata- Not sure if its implemented properly
+def update_accountMetaData(con,headers): ###update objects metadata- Not sure if its implemented properly
 	try:
-		con.post_account()
+		con.post_account(headers)
 	except ClientException as e:
                 return e.msg, e.http_status
 	else:
@@ -155,6 +155,14 @@ def func1():
 		head =  head_account(con)
 		print head
 		return head
+	elif request.method == "POST":
+		con = connect_swift()
+		head = request.headers
+		headers = {}
+		for key in head:
+			str(headers[key[0]]) = str(key[1])
+		
+		return update_accountMetaData(con,headers)
 	
 	else:
 		return "Not yet implemented", 501
@@ -170,6 +178,14 @@ def func2(container):
 	elif request.method == 'GET':
 		con = connect_swift()
 		return get_container(con, container)
+	elif request.method == "POST":
+		con = connect_swift()
+		head = request.headers
+		headers = {}
+		for key in head:
+			str(headers[key[0]]) = str(key[1])
+		
+		return update_containerMetaData(con, container,headers)
 	
 	elif request.method=='HEAD':
 		con=connect_swift()
@@ -198,10 +214,18 @@ def func3(container, obj):
 		p1=str(p).split('/')
 		#print p1
 		header,result = con.get_object(container,obj)
-		return upload_object(con,p1[1],p1[2],result)
+		return upload_object(con,p1[0],p1[1],result)
 	elif request.method=='HEAD':
 		con=connect_swift()
 		return get_object(con,container,obj)
+	elif request.method == "POST":
+		con = connect_swift()
+		head = request.headers
+		headers = {}
+		for key in head:
+			str(headers[key[0]]) = str(key[1])
+		
+		return update_objectMetaData(con, container, obj,headers)
 	
 
         else:

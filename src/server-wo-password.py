@@ -112,7 +112,7 @@ def head_account(con):### show account metadata
                 try:
 			headers=con.head_account()
 			##print headers
-			return str(headers),200
+			return headers,200
 		except ClientException as e:
 			print e.msg
 			return e.msg,e.http_status
@@ -123,7 +123,7 @@ def head_container(con,container):### show container metadata
                 try:
 			headers=con.head_container(container)
 			##print headers
-			return str(headers),200
+			return headers,200
 		except ClientException as e:
 			return e.msg,e.http_status
 		else:
@@ -152,9 +152,9 @@ def func1():
 		return update_accountMetaData(con)
 	elif request.method=='Head':
  		con=connect_swift()
-		head =  head_account(con)
+		head,status =  head_account(con)
 		print head
-		return head
+		return "", status, head
 	elif request.method == "POST":
 		con = connect_swift()
 		head = request.headers
@@ -189,7 +189,8 @@ def func2(container):
 	
 	elif request.method=='HEAD':
 		con=connect_swift()
-		return head_container(con,container)
+		head,status=head_container(con,container)
+		return "",status,head
         else:
                 return "Not yet implemented", 501
 
@@ -217,7 +218,8 @@ def func3(container, obj):
 		return upload_object(con,p1[0],p1[1],result)
 	elif request.method=='HEAD':
 		con=connect_swift()
-		return get_object(con,container,obj)
+		head,status=get_object(con,container,obj)
+		return "",status,head
 	elif request.method == "POST":
 		con = connect_swift()
 		head = request.headers

@@ -160,7 +160,7 @@ def func1():
 		head = request.headers
 		headers = {}
 		for key in head:
-			str(headers[key[0]]) = str(key[1])
+			headers[key[0]] = key[1]
 		
 		return update_accountMetaData(con,headers)
 	
@@ -183,7 +183,7 @@ def func2(container):
 		head = request.headers
 		headers = {}
 		for key in head:
-			str(headers[key[0]]) = str(key[1])
+			headers[key[0]] = key[1]
 		
 		return update_containerMetaData(con, container,headers)
 	
@@ -225,7 +225,7 @@ def func3(container, obj):
 		head = request.headers
 		headers = {}
 		for key in head:
-			str(headers[key[0]]) = str(key[1])
+			headers[key[0]] = key[1]
 		
 		return update_objectMetaData(con, container, obj,headers)
 	

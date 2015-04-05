@@ -1,0 +1,9 @@
+{
+	"auth":{
+		"tenatName":"EC500-openstack-passthru",
+		"passwordCredentials":{
+			"username":"singh1",
+			"password":"JRARJNS"
+		}
+	}
+}

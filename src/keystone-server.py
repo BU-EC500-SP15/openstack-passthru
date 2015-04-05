@@ -58,7 +58,7 @@ def token():
 			obj = request.get_json()
 			usr = obj['auth']['passwordCredentials']['username']
 			key = obj['auth']['passwordCredentials']['password']
-			ten = obj['auth']['tenatName']
+			ten = obj['auth']['tenantName']
 			con = connect_keystone(usr,key,ten)
 			token = redirect(con)
 			return str(token)

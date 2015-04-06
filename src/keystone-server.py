@@ -33,8 +33,12 @@ def redirect(con):			###redirect the keystone endpoints to our proxy servers.
 	for val in token['serviceCatalog']:
 		if(val['name']=='keystone'):
 			val['endpoints'][0]['publicURL'] = 'http://localhost:5002'
+			val['endpoints'][0]['internalURL'] = 'http://localhost:5002'
+			val['endpoints'][0]['adminURL'] = 'http://localhost:5002'
 		elif(val['name']=='swift'):
-			val['endpoints'][0]['publicURL'] = 'http://localhost:5000'
+			val['endpoints'][0]['publicURL'] = 'http://localhost:5001'
+			val['endpoints'][0]['internalURL'] = 'http://localhost:5001'
+			val['endpoints'][0]['adminURL'] = 'http://localhost:5001'
 	token['user'] = key['user']
 	token['metadata'] = key['metadata']	
 	#print token['serviceCatalog']

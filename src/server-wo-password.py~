@@ -10,7 +10,7 @@ token1='MIITnAYJKoZIhvcNAQcCoIITjTCCE4kCAQExCTAHBgUrDgMCGjCCEfIGCSqGSIb3DQEHAaCC
 
 def connect_swift(token):			###for createing connection to the account and getting an object to work on swift.
 	print token
-	con = client.Connection(preauthurl='http://140.247.152.223/swift/v1' ,preauthtoken=token1,auth_version='2', retries=10,)
+	con = client.Connection(preauthurl='http://140.247.152.223/swift/v1' ,preauthtoken=token,auth_version='2', retries=10,)
 	return con
 
 from swiftclient import ClientException

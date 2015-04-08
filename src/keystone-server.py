@@ -3,6 +3,8 @@ import socket
 import copy
 #from swiftclient import client
 from keystoneclient.v2_0 import client
+from flask import Response
+import json
 
 authurl = 'http://140.247.152.207:35357/v2.0'			
 
@@ -42,7 +44,7 @@ def redirect(con):			###redirect the keystone endpoints to our proxy servers.
 	token['user'] = key['user']
 	token['metadata'] = key['metadata']	
 	#print token['serviceCatalog']
-	
+	print str(token)
 	return token	
 		
 	
@@ -65,7 +67,7 @@ def token():
 			ten = obj['auth']['tenantName']
 			con = connect_keystone(usr,key,ten)
 			token = redirect(con)
-			return str(token)
+			return Response(json.dumps(token),mimetype='application/json')
 				 
 		else:
 			return 'Not Supported Media'

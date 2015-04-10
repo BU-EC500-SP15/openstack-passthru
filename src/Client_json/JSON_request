@@ -2,8 +2,8 @@
 	"auth":{
 		"tenantName":"EC500-openstack-passthru",
 		"passwordCredentials":{
-			"username":"ddt0523",
-			"password":"ddt0523"
+			"username":"username",
+			"password":"password"
 		}
 	}
 }

@@ -168,35 +168,45 @@ app = Flask(__name__)
 
 @app.route("/", methods=['GET', 'POST', 'HEAD'])
 def func1():
+
+	var=raw_input("MOC1 or MOC2:")
+	if var!='MOC1'and var!='MOC2':
+		var=raw_input("Please input either MOC1 or MOC2:")
+	elif var='MOC1':
+		url =preauthurl_MOC1
+	else var='MOC2':
+		url =preauthurl_MOC2
+ 
+
+
 	if request.method == 'GET':
 		token=request.headers.get('X-Auth-Token')
-		url =preauthurl_MOC1				###getting both
-		url1 =preauthurl_MOC2
+		#url =preauthurl_MOC1				###getting both
+		#url1 =preauthurl_MOC2
 		con= connect_swift(token,url)
-		con1= connect_swift(token,url1)
-		return "MOC1:",get_account(con),"   MOC2:",get_account(con1)
+		#con1= connect_swift(token,url1)
+		return var,": ",get_account(con)
 			
 	elif request.method=='Head':
 		token=request.headers.get('X-Auth-Token');
  		url =preauthurl_MOC1	                        ###showing both
-		url1 =preauthurl_MOC2			
+		#url1 =preauthurl_MOC2			
 		con=connect_swift(token,url)
-		con1= connect_swift(token,url1)
+		#con1= connect_swift(token,url1)
 		head,status =  head_account(con)
-		head1,status1 =  head_account(con)
+		#head1,status1 =  head_account(con)
 		print head,head1
-		return "MOC1:", status, head,"  MOC2:", status1,head1
+		return var,": ", status, head
 	elif request.method == "POST":
 		token=request.headers.get('X-Auth-Token');
 		url =preauthurl_MOC1				###needs to be changed
-		url1 =preauthurl_MOC2
 		con=connect_swift(token,url)
 		head = request.headers
 		headers = {}
 		for key in head:
 			headers[key[0]] = key[1]
 		
-		return update_accountMetaData(con,headers)
+		return var, ": ",update_accountMetaData(con,headers)
 	
 	else:
 		return "Not yet implemented", 501

@@ -198,7 +198,7 @@ def func1():
 	else:
 		return "Not yet implemented", 501
 
-@app.route("/<container>", methods=['PUT', 'DELETE', 'GET', 'POST', 'HEAD'])
+@app.route("/<container>/", methods=['PUT', 'DELETE', 'GET', 'POST', 'HEAD'])
 def func2(container):
         if request.method == 'PUT':
 		token=request.headers.get('X-Auth-Token');
@@ -236,7 +236,7 @@ def func2(container):
                 return "Not yet implemented", 501
 
 
-@app.route("/<container>/<obj>", methods=[ 'PUT', 'DELETE', 'GET', 'POST', 'HEAD', 'COPY'])
+@app.route("/<container>/<obj>/", methods=[ 'PUT', 'DELETE', 'GET', 'POST', 'HEAD', 'COPY'])
 def func3(container, obj):
         if request.method=='GET':
 		token=request.headers.get('X-Auth-Token');

@@ -170,9 +170,11 @@ app = Flask(__name__)
 def func1():
 	if request.method == 'GET':
 		token=request.headers.get('X-Auth-Token')
-		url =preauthurl_MOC1				###needs to be changed
-		con= connect_swift(token,url)
+		url =preauthurl_MOC1
+				###needs to be changed
 		urla=preauthurl_MOC2
+		
+		con= connect_swift(token,url)
 		cona=connect_swift(token,urla)
 		result=str(get_account(con))+str(get_account(cona))
 		return result
@@ -181,9 +183,18 @@ def func1():
 		token=request.headers.get('X-Auth-Token');
  		url =preauthurl_MOC1				###needs to be changed
 		con=connect_swift(token,url)
+		urla=preauthurl_MOC2
+		cona=connect_swift(token,urla)
 		head,status =  head_account(con)
-		print head
-		return "", status, head
+		heada,statusa=head_account(cona)
+		result={}		
+		result=head
+		result['x-account-object-count']=str(int(head['x-account-object-count'])+int(heada['x-account-object-count']))
+		result['x-account-bytes-used']=str(int(head['x-account-bytes-used'])+int(heada['x-account-bytes-used']))
+		result['x-account-bytes-used-actual']=str(int(head['x-account-bytes-used-actual'])+int(heada['x-account-bytes-used-actual']))
+		result['x-account-container-count']=str(int(head['x-account-container-count'])+int(heada['x-account-container-count']))
+		print type(head)
+		return "", status, result
 	elif request.method == "POST":
 		token=request.headers.get('X-Auth-Token');
 		url =preauthurl_MOC1				###needs to be changed

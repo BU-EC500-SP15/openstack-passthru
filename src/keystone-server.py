@@ -23,26 +23,27 @@ def connect_keystone(usr,key,ten):			###get authentication token for POST comman
 #from keystoneclient.v2_0 import ClientException
 
 def redirect(con):			###redirect the keystone endpoints to our proxy servers.
-	key =dict(con.auth_ref)
+	key =copy.deepcopy(con.auth_ref)
 	print str(key)
 	token = {}
-	token['token'] = key['token']
-	token['version'] = key['version']
-	token['serviceCatalog'] = []
+	token['access'] = {}
+	token['access']['token'] = key['token']
+	token['access']['version'] = key['version']
+	token['access']['serviceCatalog'] = []
 	for val in key['serviceCatalog']:
 		if (val['name']=='keystone')or(val['name']=='swift'):
-			token['serviceCatalog'] .append(val)
-	for val in token['serviceCatalog']:
+			token['access']['serviceCatalog'] .append(val)
+	for val in token['access']['serviceCatalog']:
 		if(val['name']=='keystone'):
-			val['endpoints'][0]['publicURL'] = 'http://localhost:5002'
-			val['endpoints'][0]['internalURL'] = 'http://localhost:5002'
-			val['endpoints'][0]['adminURL'] = 'http://localhost:5002'
+			val['endpoints'][0]['publicURL'] = 'http://localhost:5002/v2.0'
+			val['endpoints'][0]['internalURL'] = 'http://localhost:5002/v2.0'
+			val['endpoints'][0]['adminURL'] = 'http://localhost:5002/v2.0'
 		elif(val['name']=='swift'):
 			val['endpoints'][0]['publicURL'] = 'http://localhost:5001'
 			val['endpoints'][0]['internalURL'] = 'http://localhost:5001'
 			val['endpoints'][0]['adminURL'] = 'http://localhost:5001'
-	token['user'] = key['user']
-	token['metadata'] = key['metadata']	
+	token['access']['user'] = key['user']
+	token['access']['metadata'] = key['metadata']	
 	#print token['serviceCatalog']
 	print str(token)
 	return token	
@@ -67,7 +68,9 @@ def token():
 			ten = obj['auth']['tenantName']
 			con = connect_keystone(usr,key,ten)
 			token = redirect(con)
-			return Response(json.dumps(token),mimetype='application/json')
+			rsp =  Response(json.dumps(token),mimetype='application/json')
+			rsp.headers['Vary']= 'X-Auth-Token'
+			return rsp
 				 
 		else:
 			return 'Not Supported Media'

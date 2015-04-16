@@ -3,7 +3,7 @@ import pdb
 import socket
 #pdb.set_trace()
 from swiftclient import client
-
+import json
 
 #authurl = 'http://140.247.152.207:35357/v2.0'
 #ten = 'EC500-openstack-passthru'
@@ -36,7 +36,7 @@ def delete_container(con, container):	### for deleting a container from the conn
 def get_container(con, container): ### for listing a container's objects and information.
 	try:
 		headers, result = con.get_container(container)
-		return str(result),200
+		return json.dumps(result),200
 	except ClientException as e:
 		return e.msg, e.http_status
 	else:
@@ -48,7 +48,7 @@ def get_account(con):
 		#print "wetwerewr"
 		#print result
 		#print type(result)
-		return str(result), 200
+		return json.dumps(result), 200
 		#return str(result),200
 	except ClientException as e:
 		print e.msg		
@@ -59,7 +59,7 @@ def get_object(con,container,obj):  ### for download an object from the containe
         try:
 		
                 headers,result = con.get_object(container, obj)
-		return str(result),200
+		return json.dumps(result),200
         except ClientException as e:
 		
                 return e.msg, e.http_status
@@ -144,10 +144,10 @@ def head_object(con,container,obj):### show object metadata
 def Hash(container):
 	c_swift = str(container).split('-')
 	if c_swift[0] == 'MOC1':
-		print 'in 1'
+		#print 'in 1'
 		return preauthurl_MOC1
 	elif c_swift[0] == 'MOC2':
-		print 'in 2'
+		#print 'in 2'
 		return preauthurl_MOC2
 	else:
 		sm=0
@@ -155,10 +155,10 @@ def Hash(container):
 			sm += ord(letters)
 		index = sm%Backends
 		if index == 0: 
-			print 'in 1'
+			#print 'in 1'
 			return preauthurl_MOC1
 		elif index == 1:
-			print 'in 2'
+			#print 'in 2'
 			return preauthurl_MOC2
 			
 ##################################################################################################### flask:

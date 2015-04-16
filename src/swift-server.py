@@ -174,7 +174,7 @@ def func1():
 		con= connect_swift(token,url)
 		return get_account(con)
 			
-	elif request.method=='Head':
+	elif request.method=='HEAD':
 		token=request.headers.get('X-Auth-Token');
  		url =preauthurl_MOC1				###needs to be changed
 		con=connect_swift(token,url)

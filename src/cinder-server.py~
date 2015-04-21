@@ -8,21 +8,20 @@ import json
 #authurl = 'http://140.247.152.207:35357/v2.0'
 #cinderurl= 'http://10.31.27.207:8776/v2/d5785e4393ba4db5871c34b6a6c3ef7b'
 #ten = 'EC500-openstack-passthru'
+preauthurl_MOC1='http://140.247.152.223/swift/v1'
+preauthurl_MOC2='http://140.247.152.223/swift/v1'
+Backends = 2
 
 
 
-
-def connect_cinder(): #########works
+def connect_cinder():
 	con=client.Client('2', 'estherlu', '31415926', 'EC500-openstack-passthru', 'http://140.247.152.207:35357/v2.0')
 	return con
 
 
 from swiftclient import ClientException
 
-def get_volumes(con,tenant):
-	try:                              ###########needs modification
-		vlist=con.volumes.list();
-		return vlist;
+
 
               
 

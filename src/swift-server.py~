@@ -176,7 +176,7 @@ def func1():
 		
 		con= connect_swift(token,url)
 		cona=connect_swift(token,urla)
-		result=(get_account(con))#+str(get_account(cona))
+		result=str(get_account(con))+str(get_account(cona))
 		return result
 			
 	elif request.method=='HEAD':

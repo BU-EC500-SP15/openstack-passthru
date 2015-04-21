@@ -195,7 +195,7 @@ def func1():
 		result['x-account-container-count']=str(int(head['x-account-container-count'])+int(heada['x-account-container-count']))
 		print type(head)
 		return "", status, result
-	elif request.method == "POST":
+	elif request.method == "POST":  ####we dont actually have solution to specify the swift server to make the change, for 						now we set the default to MOC1
 		token=request.headers.get('X-Auth-Token');
 		url =preauthurl_MOC1				###needs to be changed
 		con=connect_swift(token,url)
@@ -207,7 +207,7 @@ def func1():
 		return update_accountMetaData(con,headers)
 	
 	else:
-		return "Not yet implemented", 501
+		return "No Such Function", 501
 
 @app.route("/<container>", methods=['PUT', 'DELETE', 'GET', 'POST', 'HEAD'])
 def func2(container):
@@ -244,7 +244,7 @@ def func2(container):
 		head,status=head_container(con,container)
 		return "",status,head
         else:
-                return "Not yet implemented", 501
+                return "No Such Function", 501
 
 
 @app.route("/<container>/<obj>", methods=[ 'PUT', 'DELETE', 'GET', 'POST', 'HEAD', 'COPY'])
@@ -293,7 +293,7 @@ def func3(container, obj):
 	
 
         else:
-        	return "Not Yet Implemented", 501
+        	return "No Such Function", 501
 
 	
 

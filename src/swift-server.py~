@@ -3,7 +3,7 @@ import pdb
 import socket
 #pdb.set_trace()
 from swiftclient import client
-
+import json
 
 #authurl = 'http://140.247.152.207:35357/v2.0'
 #ten = 'EC500-openstack-passthru'
@@ -36,7 +36,7 @@ def delete_container(con, container):	### for deleting a container from the conn
 def get_container(con, container): ### for listing a container's objects and information.
 	try:
 		headers, result = con.get_container(container)
-		return str(result),200
+		return json.dumps(result),200
 	except ClientException as e:
 		return e.msg, e.http_status
 	else:
@@ -48,7 +48,7 @@ def get_account(con):
 		#print "wetwerewr"
 		#print result
 		#print type(result)
-		return str(result), 200
+		return json.dumps(result), 200
 		#return str(result),200
 	except ClientException as e:
 		print e.msg		
@@ -59,7 +59,7 @@ def get_object(con,container,obj):  ### for download an object from the containe
         try:
 		
                 headers,result = con.get_object(container, obj)
-		return str(result),200
+		return json.dumps(result),200
         except ClientException as e:
 		
                 return e.msg, e.http_status
@@ -144,10 +144,10 @@ def head_object(con,container,obj):### show object metadata
 def Hash(container):
 	c_swift = str(container).split('-')
 	if c_swift[0] == 'MOC1':
-		print 'in 1'
+		#print 'in 1'
 		return preauthurl_MOC1
 	elif c_swift[0] == 'MOC2':
-		print 'in 2'
+		#print 'in 2'
 		return preauthurl_MOC2
 	else:
 		sm=0
@@ -155,10 +155,10 @@ def Hash(container):
 			sm += ord(letters)
 		index = sm%Backends
 		if index == 0: 
-			print 'in 1'
+			#print 'in 1'
 			return preauthurl_MOC1
 		elif index == 1:
-			print 'in 2'
+			#print 'in 2'
 			return preauthurl_MOC2
 			
 ##################################################################################################### flask:
@@ -170,18 +170,32 @@ app = Flask(__name__)
 def func1():
 	if request.method == 'GET':
 		token=request.headers.get('X-Auth-Token')
-		url =preauthurl_MOC1				###needs to be changed
+		url =preauthurl_MOC1
+				###needs to be changed
+		urla=preauthurl_MOC2
+		
 		con= connect_swift(token,url)
-		return get_account(con)
+		cona=connect_swift(token,urla)
+		result=str(get_account(con))+str(get_account(cona))
+		return result
 			
 	elif request.method=='HEAD':
 		token=request.headers.get('X-Auth-Token');
  		url =preauthurl_MOC1				###needs to be changed
 		con=connect_swift(token,url)
+		urla=preauthurl_MOC2
+		cona=connect_swift(token,urla)
 		head,status =  head_account(con)
-		print head
-		return "", status, head
-	elif request.method == "POST":
+		heada,statusa=head_account(cona)
+		result={}		
+		result=head
+		result['x-account-object-count']=str(int(head['x-account-object-count'])+int(heada['x-account-object-count']))
+		result['x-account-bytes-used']=str(int(head['x-account-bytes-used'])+int(heada['x-account-bytes-used']))
+		result['x-account-bytes-used-actual']=str(int(head['x-account-bytes-used-actual'])+int(heada['x-account-bytes-used-actual']))
+		result['x-account-container-count']=str(int(head['x-account-container-count'])+int(heada['x-account-container-count']))
+		print type(head)
+		return "", status, result
+	elif request.method == "POST":  ####we dont actually have solution to specify the swift server to make the change, for 						now we set the default to MOC1
 		token=request.headers.get('X-Auth-Token');
 		url =preauthurl_MOC1				###needs to be changed
 		con=connect_swift(token,url)

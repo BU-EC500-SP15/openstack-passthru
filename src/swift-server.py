@@ -4,6 +4,7 @@ import socket
 #pdb.set_trace()
 from swiftclient import client
 import json
+from flask import jsonify
 
 #authurl = 'http://140.247.152.207:35357/v2.0'
 #ten = 'EC500-openstack-passthru'
@@ -36,7 +37,7 @@ def delete_container(con, container):	### for deleting a container from the conn
 def get_container(con, container): ### for listing a container's objects and information.
 	try:
 		headers, result = con.get_container(container)
-		return json.dumps(result),200
+		return Response(json.dumps(result),mimetype='application/json'),200
 	except ClientException as e:
 		return e.msg, e.http_status
 	else:
@@ -47,8 +48,8 @@ def get_account(con):
 		headers, result = con.get_account()
 		#print "wetwerewr"
 		#print result
-		#print type(result)
-		return json.dumps(result), 200
+		#print format(result)
+		return Response(json.dumps(result),mimetype='application/json'), 200
 		#return str(result),200
 	except ClientException as e:
 		print e.msg		
@@ -116,8 +117,8 @@ def delete_object(con,container,obj):			###method to delete the objects in conta
 def head_account(con):### show account metadata
                 try:
 			headers=con.head_account()
-			##print headers
-			return headers,200
+			print headers
+			return headers,200 #Response(json.dumps(headers),mimetype='application/json'),200
 		except ClientException as e:
 			print e.msg
 			return e.msg,e.http_status
@@ -128,7 +129,7 @@ def head_container(con,container):### show container metadata
                 try:
 			headers=con.head_container(container)
 			##print headers
-			return headers,200
+			return headers,200 #Response(json.dumps(headers),mimetype='application/json'),200
 		except ClientException as e:
 			return e.msg,e.http_status
 		else:
@@ -136,7 +137,7 @@ def head_container(con,container):### show container metadata
 def head_object(con,container,obj):### show object metadata
                 try:
 			headers=con.head_object(container,obj)
-			return headers,200
+			return headers,200 #Response(json.dumps(headers),mimetype='application/json'),200
 		except ClientException as e:
 			return e.msg,e.http_status
 		else:
@@ -163,7 +164,7 @@ def Hash(container):
 			
 ##################################################################################################### flask:
 
-from flask import Flask, request
+from flask import Flask, request,Response
 app = Flask(__name__)
 
 @app.route("/", methods=['GET', 'POST', 'HEAD'])
@@ -173,29 +174,32 @@ def func1():
 		url =preauthurl_MOC1
 				###needs to be changed
 		urla=preauthurl_MOC2
-		
+		frmt = request.url
+		#print frmt
 		con= connect_swift(token,url)
 		cona=connect_swift(token,urla)
-		result=(get_account(con))#+str(get_account(cona))
+		result=(get_account(con))#+(get_account(cona))
 		return result
 			
 	elif request.method=='HEAD':
+		print 'in account HEAD'
+		pdb.set_trace()
 		token=request.headers.get('X-Auth-Token');
  		url =preauthurl_MOC1				###needs to be changed
 		con=connect_swift(token,url)
-		urla=preauthurl_MOC2
-		cona=connect_swift(token,urla)
+		#urla=preauthurl_MOC2
+		#cona=connect_swift(token,urla)
 		head,status =  head_account(con)
-		heada,statusa=head_account(cona)
+		#heada,statusa=head_account(cona)
 		result={}		
-		result=head
-		result['x-account-object-count']=str(int(head['x-account-object-count'])+int(heada['x-account-object-count']))
-		result['x-account-bytes-used']=str(int(head['x-account-bytes-used'])+int(heada['x-account-bytes-used']))
-		result['x-account-bytes-used-actual']=str(int(head['x-account-bytes-used-actual'])+int(heada['x-account-bytes-used-actual']))
-		result['x-account-container-count']=str(int(head['x-account-container-count'])+int(heada['x-account-container-count']))
-		print type(head)
+		#result=head
+		result['X-Account-Object-Count']=str(int(head['x-account-object-count']))#str(int(head['x-account-object-count'])+int(heada['x-account-object-count']))
+		result['X-Account-Bytes-Used']=str(int(head['x-account-bytes-used']))#str(int(head['x-account-bytes-used'])+int(heada['x-account-bytes-used']))
+		result['X-Account-Bytes-Used-Actual']=str(int(head['x-account-bytes-used-actual']))#str(int(head['x-account-bytes-used-actual'])+int(heada['x-account-bytes-used-actual']))
+		result['X-Account-Container-Count']=str(int(head['x-account-container-count']))#str(int(head['x-account-container-count'])+int(heada['x-account-container-count']))
+		print type(result)
 		return "", status, result
-	elif request.method == "POST":  ####we dont actually have solution to specify the swift server to make the change, for 						now we set the default to MOC1
+	elif request.method == "POST":
 		token=request.headers.get('X-Auth-Token');
 		url =preauthurl_MOC1				###needs to be changed
 		con=connect_swift(token,url)
@@ -207,7 +211,7 @@ def func1():
 		return update_accountMetaData(con,headers)
 	
 	else:
-		return "No Such Function", 501
+		return "Not yet implemented", 501
 
 @app.route("/<container>", methods=['PUT', 'DELETE', 'GET', 'POST', 'HEAD'])
 def func2(container):
@@ -238,13 +242,15 @@ def func2(container):
 		return update_containerMetaData(con, container,headers)
 	
 	elif request.method=='HEAD':
+		print 'in container HEAD'
+		pdb.set_trace()
 		token=request.headers.get('X-Auth-Token');
 		url = Hash(container)
 		con=connect_swift(token,url)
 		head,status=head_container(con,container)
 		return "",status,head
         else:
-                return "No Such Function", 501
+                return "Not yet implemented", 501
 
 
 @app.route("/<container>/<obj>", methods=[ 'PUT', 'DELETE', 'GET', 'POST', 'HEAD', 'COPY'])
@@ -256,6 +262,8 @@ def func3(container, obj):
                 return get_object(con,container,obj)
 	elif request.method == 'PUT':	
 		token=request.headers.get('X-Auth-Token');			###method to upload/replace the objects in container.
+		print 'in upload put'
+		pdb.set_trace()
 		url = Hash(container)
 		con=connect_swift(token,url)
 		objct = request.get_data()
@@ -275,11 +283,21 @@ def func3(container, obj):
 		header,result = con.get_object(container,obj)
 		return upload_object(con,p1[0],p1[1],result)
 	elif request.method=='HEAD':
+		print 'in upload HEAD'
+		pdb.set_trace()
 		token=request.headers.get('X-Auth-Token');
 		url = Hash(container)
 		con=connect_swift(token,url)
-		head,status=get_object(con,container,obj)
-		return "",status,head
+		head,status=head_object(con,container,obj)
+		result={}		
+		#result=head
+		#result['Accept-Ranges']=(head['Accept-Ranges'])
+		result['Last-Modified']=(head['last-modified'])
+		result['etag']=(head['etag'])
+		result['X-Object-Meta-Mtime']=(head['x-object-meta-mtime'])
+		result['Date']=(head['date'])
+		print type(result)
+		return "",status,result
 	elif request.method == "POST":
 		token = request.headers.get('X-Auth-Token')
 		url = Hash(container)
@@ -293,7 +311,7 @@ def func3(container, obj):
 	
 
         else:
-        	return "No Such Function", 501
+        	return "Not Yet Implemented", 501
 
 	
 

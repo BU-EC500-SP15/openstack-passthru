@@ -1,7 +1,5 @@
 import os
-import pdb#;pdb.set_trace()
 import socket
-#pdb.set_trace()
 from cinderclient import client
 import json
 

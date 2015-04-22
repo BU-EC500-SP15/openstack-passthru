@@ -291,11 +291,11 @@ def func3(container, obj):
 		head,status=head_object(con,container,obj)
 		result={}		
 		#result=head
-		#result['Accept-Ranges']=(head['Accept-Ranges'])
-		result['Last-Modified']=(head['last-modified'])
-		result['etag']=(head['etag'])
-		result['X-Object-Meta-Mtime']=(head['x-object-meta-mtime'])
-		result['Date']=(head['date'])
+		result['Accept-Ranges']=str(head['Accept-Ranges'])
+		result['Last-Modified']=str(head['last-modified'])
+		result['etag']=str(head['etag'])
+		result['X-Object-Meta-Mtime']=str(head['x-object-meta-mtime'])
+		result['Date']=str(head['date'])
 		print type(result)
 		return "",status,result
 	elif request.method == "POST":

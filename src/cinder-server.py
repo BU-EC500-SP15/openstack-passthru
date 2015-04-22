@@ -24,8 +24,10 @@ def connect_cinder(): #########works
 
 from cinderclient import exceptions
 
+
+#####list volumes with name and size
 def get_volumes(con):
-	try:                              ###########needs modification
+	try:                              
 		vlist=con.volumes.list()
 #		print vlist[1]
 #		print vlist[0]
@@ -45,11 +47,52 @@ def get_volumes(con):
 		return "", 204
 
 
+######list volumes with whole detail
+def get_volumes_detail(con):
+	try:  
+		vlist=con.volumes.list()
+		dvols=[]
+		for i in range(len(vlist)):
+			vdict=vlist[i].__dict__
+			dvols.append(vdict)
+		return str(dvols)
+	except exception as e:
+		return e.msg, e.http_status
+	else:
+		return "", 204
 
+
+#####create volume
 def create_volume(con,name1,size1):
 	try:
 		p=str(con.volumes.create(size1,name=name1))
 		return p,200
+	except exception as e:
+		return e.msg, e.http_status
+	else:
+		return "", 204
+
+
+#####get a volume's whole detail by its uuid
+def get_a_volume(con,volumeid):
+	try:
+		vid=unicode(volumeid)
+		vol=con.volumes.get(vid)
+		voldict=vol.__dict__
+		return str(voldict),200
+	except exception as e:
+		return e.msg, e.http_status
+	else:
+		return "", 204
+
+
+#####delete a volume by its uuid
+def delete_volume(con,volumeid):
+	try:
+		vid=unicode(volumeid)
+		vol=con.volumes.get(vid)
+		con.volumes.delete(vol)
+		return "",200
 	except exception as e:
 		return e.msg, e.http_status
 	else:
@@ -64,8 +107,8 @@ from flask import Flask, request
 app = Flask(__name__)
 
 
-@app.route("/v2/<tenantid>/volumes", methods=[ 'GET', 'POST'])
-def func2(tenantid): 
+@app.route("/v2/<tenid>/volumes", methods=[ 'GET', 'POST'])
+def func1(tenid): 
 #####GET: curl -X GET http://localhost:5003/v2/EC500-openstack-passthru/volumes
 #####POST: curl -X POST http://localhost:5003/v2/EC500-openstack-passthru/volumes -H "Volume-Name:test3" -H "Volume-Size:1"		        
         if  request.method == 'GET':		
@@ -82,7 +125,32 @@ def func2(tenantid):
 
 
 
+@app.route("/v2/<tenid>/volumes/detail", methods=[ 'GET'])
+def func2(tenid): 
+#####GET: curl -X GET http://localhost:5003/v2/EC500-openstack-passthru/volumes/detail
+	if request.method == 'GET':
+		con=connect_cinder()
+		return get_volumes_detail(con)
+	else:
+		return "No Such Function", 501
 
+
+
+@app.route("/v2/<tenid>/volumes/<vid>", methods=[ 'GET', 'PUT', 'DELETE'])
+def func3(tenid,vid): 
+#####GET: curl -X GET http://localhost:5003/v2/EC500-openstack-passthru/volumes/uuid
+#####DELETE: curl -X DELETE http://localhost:5003/v2/EC500-openstack-passthru/volumes/uuid
+	if request.method == 'GET':
+		con=connect_cinder()
+		return get_a_volume(con,vid)
+	elif request.method == 'PUT':###to be implemented
+		con=connect_cinder()
+		return 'not yet'
+	elif request.method == 'DELETE':
+		con=connect_cinder()
+		return delete_volume(con,vid)
+	else:
+		return "No Such Function", 501
 	
 
 

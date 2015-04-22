@@ -10,8 +10,8 @@ import json
 #cinderurl= 'http://10.31.27.207:8776/v2/d5785e4393ba4db5871c34b6a6c3ef7b'
 
 version='2'
-uname=username
-pwd=password
+uname='estherlu'
+pwd='31415926'
 ten = 'EC500-openstack-passthru'
 authurl = 'http://140.247.152.207:35357/v2.0'
 
@@ -97,6 +97,17 @@ def delete_volume(con,volumeid):
 		return e.msg, e.http_status
 	else:
 		return "", 204
+
+#####increase the size of a volume
+def extend_volume(con,volumeid,size):
+	try:
+		vid=unicode(volumeid)
+		vol=con.volumes.get(vid)
+		con.volumes.extend(vol,size)
+	except exception as e:
+		return e.msg, e.http_status
+	else:
+		return "", 204
           
 
 
@@ -152,6 +163,15 @@ def func3(tenid,vid):
 	else:
 		return "No Such Function", 501
 	
+
+@app.route("/v2/<tenid>/volumes/<vid>/action", methods=[ 'POST'])
+def finc4(tenid,vid):
+	if request.method == 'POST':
+		con=connect_cinder()
+		size=int(request.headers.get('Volume-Size'))
+		return extend_volume(con,vid,size);
+	else:
+		return "No Such Function", 501
 
 
 

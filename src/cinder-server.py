@@ -8,8 +8,8 @@ import json
 #cinderurl= 'http://10.31.27.207:8776/v2/d5785e4393ba4db5871c34b6a6c3ef7b'
 
 version='2'
-uname='estherlu'
-pwd='31415926'
+uname=
+pwd=
 ten = 'EC500-openstack-passthru'
 authurl = 'http://140.247.152.207:35357/v2.0'
 
@@ -164,6 +164,8 @@ def func3(tenid,vid):
 
 @app.route("/v2/<tenid>/volumes/<vid>/action", methods=[ 'POST'])
 def finc4(tenid,vid):
+#####curl -X POST http://localhost:5003/v2/EC500-openstack-passthru/volumes/177e0e61-1c66-4454-b170-aafd99fa2c86/action -H "Volume-Size:11"
+
 	if request.method == 'POST':
 		con=connect_cinder()
 		size=int(request.headers.get('Volume-Size'))

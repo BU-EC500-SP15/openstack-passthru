@@ -45,7 +45,7 @@ def redirect(con):			###redirect the keystone endpoints to our proxy servers.
 	token['access']['user'] = key['user']
 	token['access']['metadata'] = key['metadata']	
 	#print token['serviceCatalog']
-	#print str(token)
+	print str(token)
 	return token	
 		
 	

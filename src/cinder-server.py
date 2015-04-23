@@ -48,6 +48,8 @@ def get_volumes(con):
 		return "", 204
 
 
+
+
 ######list volumes with whole detail
 def get_volumes_detail(con):
 	try:  
@@ -151,6 +153,51 @@ def get_snapshots(con):
 		return "", 204
 
 			
+
+#####get a snapshot's metedata by id
+def get_snap_meta(con,snapid):
+	try:
+		sid=unicode(snapid)
+		#print type(vid)
+		osnap=con.volume_snapshots.get(sid)
+		snap=osnap.__dict__
+		snp = {} 
+		snp['status'] = snap['status']
+		snp['os-extended-snapshot-attributes:progress'] = snap['os-extended-snapshot-attributes:progress']
+		snp['description'] = snap['description'] 
+		snp['created_at'] = snap['created_at']
+		snp['metadata'] = snap['metadata']
+		snp['volume_id'] = snap['volume_id']
+		snp['os-extended-snapshot-attributes:project_id'] = snap['os-extended-snapshot-attributes:project_id']
+		snp['size'] = snap['size']
+		snp['id'] = snap['id']
+		snp['name'] = snap['name']
+
+		return json.dumps(snp),202
+	except exception as e:
+		return e.msg, e.http_status
+	else:
+		return "", 204
+
+
+#####
+def snap_set_meta(con,snapid,meta): ##########to be modified, now hard coding metadata
+	try:
+		sid=unicode(snapid)
+		#print type(vid)
+		print type(meta)
+		osnap=con.volume_snapshots.get(sid)
+		nmt=con.volume_snapshots.set_metadata(osnap,{"metadata": "vv"})
+		print type(nmt)
+		ddmt=nmt.__dict__
+		dmt=str(ddmt)
+		return json.dumps(dmt),200
+	except exception as e:
+		return e.msg, e.http_status
+	else:
+		return "", 204
+
+
 ##################################################################################################### flask:
 
 from flask import Flask, request
@@ -221,16 +268,33 @@ def func4(tenid,vid):
 def func5(tenid):
 #####POST: curl -X POST http://localhost:5003/v2/EC500-openstack-passthru/snapshots -H "Volume-id:177e0e61-1c66-4454-b170-aafd99fa2c86"
 #####GET: curl -X GET http://localhost:5003/v2/EC500-openstack-passthru/snapshots 
-
 	if request.method == 'POST':
 		con=connect_cinder()
 		uuid=request.headers.get('Volume-id')
 		return create_snapshot(con,uuid)
-	elif request.method == 'GET':###to be implemented
+	elif request.method == 'GET':
 		con=connect_cinder()
 		return get_snapshots(con)
 	else:
 		return "No Such Function", 501
+
+
+
+
+@app.route("/v2/<tenid>/snapshots/<snapid>/metadata", methods=['GET','PUT'])
+def func6(tenid,snapid):
+#####GET: curl -X GET http://localhost:5003/v2/EC500-openstack-passthru/snapshots/9dfd50ea-936f-495b-b14d-b9f3e54599a2/metadata
+#####PUT: 
+	if request.method == 'GET':
+		con=connect_cinder()
+		return get_snap_meta(con,snapid)
+	elif request.method == 'PUT':###to be implemented
+		con=connect_cinder()
+		meta=request.headers.get('Metadata')#format:{"metadata": "v2"}
+		return snap_set_meta(con,snapid,meta)
+	else:
+		return "No Such Function", 501
+
 
 
 

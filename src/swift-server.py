@@ -183,7 +183,7 @@ def func1():
 			
 	elif request.method=='HEAD':
 		print 'in account HEAD'
-		pdb.set_trace()
+		#pdb.set_trace()
 		token=request.headers.get('X-Auth-Token');
  		url =preauthurl_MOC1				###needs to be changed
 		con=connect_swift(token,url)
@@ -263,7 +263,7 @@ def func3(container, obj):
 	elif request.method == 'PUT':	
 		token=request.headers.get('X-Auth-Token');			###method to upload/replace the objects in container.
 		print 'in upload put'
-		pdb.set_trace()
+		#pdb.set_trace()
 		url = Hash(container)
 		con=connect_swift(token,url)
 		objct = request.get_data()
@@ -284,7 +284,7 @@ def func3(container, obj):
 		return upload_object(con,p1[0],p1[1],result)
 	elif request.method=='HEAD':
 		print 'in upload HEAD'
-		pdb.set_trace()
+		#pdb.set_trace()
 		token=request.headers.get('X-Auth-Token');
 		url = Hash(container)
 		con=connect_swift(token,url)

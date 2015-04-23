@@ -1,6 +1,7 @@
 import os
 import socket
 from cinderclient import client
+from cinderclient.v2 import volume_snapshots
 import json
 
 
@@ -107,7 +108,33 @@ def extend_volume(con,volumeid,size):
 	else:
 		return "", 204
           
+#####create snapshot for a volume
+def create_snapshot(con,uuid):
+	try:
+		vid=unicode(uuid)
+		print type(vid)
+		snp=con.volume_snapshots.create(vid,force=True)
+		snap=snp.__dict__
+		return str(snap),202
+	except exception as e:
+		return e.msg, e.http_status
+	else:
+		return "", 204
 
+
+#####
+def get_snapshots(con):
+	try:  
+		slist=con.volume_snapshots.list()
+		dsnaps=[]
+		for i in range(len(slist)):
+			snp=slist[i].__dict__
+			dsnaps.append(snp)
+		return str(dsnaps)
+	except exception as e:
+		return e.msg, e.http_status
+	else:
+		return "", 204
 
 			
 ##################################################################################################### flask:
@@ -160,10 +187,11 @@ def func3(tenid,vid):
 		return delete_volume(con,vid)
 	else:
 		return "No Such Function", 501
+
 	
 
 @app.route("/v2/<tenid>/volumes/<vid>/action", methods=[ 'POST'])
-def finc4(tenid,vid):
+def func4(tenid,vid):
 #####curl -X POST http://localhost:5003/v2/EC500-openstack-passthru/volumes/177e0e61-1c66-4454-b170-aafd99fa2c86/action -H "Volume-Size:11"
 
 	if request.method == 'POST':
@@ -172,6 +200,25 @@ def finc4(tenid,vid):
 		return extend_volume(con,vid,size);
 	else:
 		return "No Such Function", 501
+
+
+
+@app.route("/v2/<tenid>/snapshots", methods=['POST', 'GET'])
+def func5(tenid):
+#####POST: curl -X POST http://localhost:5003/v2/EC500-openstack-passthru/snapshots -H "Volume-id:177e0e61-1c66-4454-b170-aafd99fa2c86"
+#####GET: curl -X GET http://localhost:5003/v2/EC500-openstack-passthru/snapshots 
+
+	if request.method == 'POST':
+		con=connect_cinder()
+		uuid=request.headers.get('Volume-id')
+		return create_snapshot(con,uuid)
+	elif request.method == 'GET':###to be implemented
+		con=connect_cinder()
+		return get_snapshots(con)
+	else:
+		return "No Such Function", 501
+
+
 
 
 

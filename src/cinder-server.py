@@ -9,8 +9,8 @@ import copy
 #cinderurl= 'http://10.31.27.207:8776/v2/d5785e4393ba4db5871c34b6a6c3ef7b'
 
 version='2'
-uname=
-pwd=
+uname='estherlu'
+pwd='31415926'
 ten = 'EC500-openstack-passthru'
 authurl = 'http://140.247.152.207:35357/v2.0'
 
@@ -126,15 +126,25 @@ def create_snapshot(con,uuid):
 		return "", 204
 
 
-#####
+#####get summary of snapshots
 def get_snapshots(con):
 	try:  
 		slist=con.volume_snapshots.list()
-		dsnaps=[]
+		result={}
+		result['snapshots']=[]
 		for i in range(len(slist)):
-			snp=slist[i].__dict__
-			dsnaps.append(snp)
-		return str(dsnaps)
+			sdict=(slist[i].__dict__)
+			snp = {} #vol=[]
+			snp['status'] = sdict['status']
+			snp['description'] = sdict['description'] 
+			snp['created_at'] = sdict['created_at']
+			snp['metadata'] = sdict['metadata']
+			snp['volume_id'] = sdict['volume_id']
+			snp['size'] = sdict['size']
+			snp['id'] = sdict['id']
+			snp['name'] = sdict['name']
+			result['snapshots'].append(snp)
+		return json.dumps(result)
 	except exception as e:
 		return e.msg, e.http_status
 	else:

@@ -9,8 +9,8 @@ import copy
 #cinderurl= 'http://10.31.27.207:8776/v2/d5785e4393ba4db5871c34b6a6c3ef7b'
 
 version='2'
-uname=
-pwd=
+uname='singh1'
+pwd='JRARJNS3'
 ten = 'EC500-openstack-passthru'
 authurl = 'http://140.247.152.207:35357/v2.0'
 
@@ -136,6 +136,7 @@ def create_snapshot(con,uuid):
 #####get summary of snapshots
 def get_snapshots(con):
 	try:  
+		
 		slist=con.volume_snapshots.list()
 		result={}
 		result['snapshots']=[]
@@ -157,6 +158,61 @@ def get_snapshots(con):
 	else:
 		return "", 204
 
+## get summary in detail
+def get_snapshots_detail(con):
+	try:  
+		detail_list=con.volume_snapshots.list()
+		result={}
+		result['snapshots']=[]
+		for i in range(len(detail_list)):
+			sdict=(detail_list[i].__dict__)
+			result['snapshots'].append(sdict)
+		return str(result)
+	except exception as e:
+		return e.msg, e.http_status
+	else:
+		return "", 204
+
+#####delete a snapshot by its uuid
+def delete_snapshot(con,snapid):
+	try:
+		sid=unicode(snapid)
+		snap=con.volume_snapshots.get(sid)
+		con.volume_snapshots.delete(snap)
+		return "",200
+	except exception as e:
+		return e.msg, e.http_status
+	else:
+		return "", 204
+		
+		
+#####get a snapshots whole detail by its uuid
+def get_snapshot_id(con,snapid):
+	try:
+		sid=unicode(snapid)
+		snap=con.volume_snapshots.get(sid)
+		result={}
+		result['snapshot']=snap.__dict__
+		return str(result),200
+	except exception as e:
+		return e.msg, e.http_status
+	else:
+		return "", 204
+		
+#####update snapshot by its uuid
+def updates_snapshot(con,snapid,update):
+	try:
+		pdb.set_trace()
+		sid=unicode(snapid)
+		snap=con.volume_snapshots.get(sid)
+		con.volume_snapshots.update(snap,update)
+		result={}
+		result['snapshot']=snap.__dict__
+		return str(result),200
+	except exception as e:
+		return e.msg, e.http_status
+	else:
+		return "", 204
 			
 
 #####get a snapshot's metedata by id
@@ -264,7 +320,7 @@ def func4(tenid,vid):
 	if request.method == 'POST':
 		con=connect_cinder()
 		size=int(request.headers.get('Volume-Size'))
-		pdb.set_trace()
+		#pdb.set_trace()
 		return extend_volume(con,vid,size);
 	else:
 		return "No Such Function", 501
@@ -282,6 +338,41 @@ def func5(tenid):
 	elif request.method == 'GET':
 		con=connect_cinder()
 		return get_snapshots(con)
+	else:
+		return "No Such Function", 501
+		
+@app.route("/v2/<tenid>/snapshots/detail", methods=[ 'GET'])
+def detail(tenid):
+#####GET: curl -X GET http://localhost:5003/v2/EC500-openstack-passthru/snapshots/detail
+
+	if request.method == 'GET':
+		con=connect_cinder()
+		return get_snapshots_detail(con)
+	else:
+		return "No Such Function", 501
+
+
+@app.route("/v2/<tenid>/snapshots/<sid>", methods=[ 'GET', 'PUT', 'DELETE'])
+def func_uid(tenid,sid): 
+
+#####DELETE: curl -X DELETE http://localhost:5003/v2/EC500-openstack-passthru/snapshots/uuid
+#####GET: curl -X GET http://localhost:5003/v2/EC500-openstack-passthru/snapshots/uuid
+#####PUT: curl -X PUT http://localhost:5003/v2/EC500-openstack-passthru/snapshots/4ebe4c27-97d3-4153-822f-11438f67dcdb -H "name:testj"
+	if request.method == 'DELETE':
+		con=connect_cinder()
+		return delete_snapshot(con,sid)
+	elif request.method == 'GET':
+		con=connect_cinder()
+		return get_snapshot_id(con,sid)
+	elif request.method == 'PUT':###to be implemented
+		con=connect_cinder()
+		head = request.headers
+		headers = {}
+		for key in head:
+			headers[key[0]] = key[1]
+		
+		return updates_snapshot(con,sid,headers)
+		
 	else:
 		return "No Such Function", 501
 

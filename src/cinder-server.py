@@ -9,8 +9,8 @@ import copy
 #cinderurl= 'http://10.31.27.207:8776/v2/d5785e4393ba4db5871c34b6a6c3ef7b'
 
 version='2'
-uname='estherlu'
-pwd='31415926'
+uname=
+pwd=
 ten = 'EC500-openstack-passthru'
 authurl = 'http://140.247.152.207:35357/v2.0'
 

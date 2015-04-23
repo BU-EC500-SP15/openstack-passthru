@@ -126,15 +126,25 @@ def create_snapshot(con,uuid):
 		return "", 204
 
 
-#####
+#####get summary of snapshots
 def get_snapshots(con):
 	try:  
 		slist=con.volume_snapshots.list()
-		dsnaps=[]
+		result={}
+		result['snapshots']=[]
 		for i in range(len(slist)):
-			snp=slist[i].__dict__
-			dsnaps.append(snp)
-		return str(dsnaps)
+			sdict=(slist[i].__dict__)
+			snp = {} #vol=[]
+			snp['status'] = sdict['status']
+			snp['description'] = sdict['description'] 
+			snp['created_at'] = sdict['created_at']
+			snp['metadata'] = sdict['metadata']
+			snp['volume_id'] = sdict['volume_id']
+			snp['size'] = sdict['size']
+			snp['id'] = sdict['id']
+			snp['name'] = sdict['name']
+			result['snapshots'].append(snp)
+		return json.dumps(result)
 	except exception as e:
 		return e.msg, e.http_status
 	else:

@@ -33,6 +33,7 @@ def get_volumes(con):
 		#pdb.set_trace()
 		result = {}
 		result['volumes']=[]
+		#pdb.set_trace()
 		for i in range(len(vlist)):
 			vdict=(vlist[i].__dict__)
 			vol = {} #vol=[]
@@ -108,7 +109,11 @@ def extend_volume(con,volumeid,size):
 	try:
 		vid=unicode(volumeid)
 		vol=con.volumes.get(vid)
-		con.volumes.extend(vol,size)
+		con.volumes.extend_volume(vol,size)
+		result = {}
+		result['os-extend']={}
+		result['os-extend']['new_size'] = str(size)
+		return str(result)
 	except exception as e:
 		return e.msg, e.http_status
 	else:
@@ -208,6 +213,7 @@ app = Flask(__name__)
 def func1(tenid): 
 #####GET: curl -X GET http://localhost:5003/v2/EC500-openstack-passthru/volumes
 #####POST: curl -X POST http://localhost:5003/v2/EC500-openstack-passthru/volumes -H "Volume-Name:test4" -H "Volume-Size:1"		
+        #pdb.set_trace()
         if  request.method == 'GET':		
 		con=connect_cinder()
 		return get_volumes(con)
@@ -258,6 +264,7 @@ def func4(tenid,vid):
 	if request.method == 'POST':
 		con=connect_cinder()
 		size=int(request.headers.get('Volume-Size'))
+		pdb.set_trace()
 		return extend_volume(con,vid,size);
 	else:
 		return "No Such Function", 501

@@ -2,8 +2,8 @@ import os
 import socket
 from cinderclient import client
 import json
-
-
+import pdb
+import copy
 
 #cinderurl= 'http://10.31.27.207:8776/v2/d5785e4393ba4db5871c34b6a6c3ef7b'
 
@@ -27,18 +27,20 @@ from cinderclient import exceptions
 def get_volumes(con):
 	try:                              
 		vlist=con.volumes.list()
-#		print vlist[1]
-#		print vlist[0]
-		volumes=[]
+		#print vlist[1]
+		#print vlist[0].__dict__
+		#pdb.set_trace()
+		result = {}
+		result['volumes']=[]
 		for i in range(len(vlist)):
-			vdict=vlist[i].__dict__
-			vol=[]
-			vol.append(vdict['id'].encode('ascii','ignore'))
-			vol.append(vdict['name'].encode('ascii','ignore'))
-			vol.append(vdict['size'])
-			print vol
-			volumes.append(vol)
-		return str(volumes),200
+			vdict=(vlist[i].__dict__)
+			vol = {} #vol=[]
+			vol['id'] = vdict['id']#vol.append(vdict['id'].encode('ascii','ignore'))
+			vol['name'] = vdict['name']#vol.append(vdict['name'].encode('ascii','ignore'))
+			vol['links'] = vdict['links']#vol.append(vdict['size'])
+			#print vol
+			result['volumes'].append(vol)
+		return json.dumps(result),200
 	except exception as e:
 		return e.msg, e.http_status
 	else:
@@ -49,10 +51,11 @@ def get_volumes(con):
 def get_volumes_detail(con):
 	try:  
 		vlist=con.volumes.list()
-		dvols=[]
+		dvols={}
+		dvols['volumes']=[]
 		for i in range(len(vlist)):
 			vdict=vlist[i].__dict__
-			dvols.append(vdict)
+			dvols['volumes'].append(vdict)
 		return str(dvols)
 	except exception as e:
 		return e.msg, e.http_status
@@ -76,8 +79,9 @@ def get_a_volume(con,volumeid):
 	try:
 		vid=unicode(volumeid)
 		vol=con.volumes.get(vid)
-		voldict=vol.__dict__
-		return str(voldict),200
+		result={}
+		result['voulmes']=vol.__dict__
+		return str(result),200
 	except exception as e:
 		return e.msg, e.http_status
 	else:
@@ -119,7 +123,7 @@ app = Flask(__name__)
 @app.route("/v2/<tenid>/volumes", methods=[ 'GET', 'POST'])
 def func1(tenid): 
 #####GET: curl -X GET http://localhost:5003/v2/EC500-openstack-passthru/volumes
-#####POST: curl -X POST http://localhost:5003/v2/EC500-openstack-passthru/volumes -H "Volume-Name:test3" -H "Volume-Size:1"		        
+#####POST: curl -X POST http://localhost:5003/v2/EC500-openstack-passthru/volumes -H "Volume-Name:test4" -H "Volume-Size:1"		
         if  request.method == 'GET':		
 		con=connect_cinder()
 		return get_volumes(con)

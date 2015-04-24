@@ -1,0 +1,55 @@
+{
+    "volumes": [
+        {
+            "attachments": [], 
+            "availability_zone": "", 
+            "bootable": "false", 
+            "created_at": "2015-04-23T11:25:03.000000", 
+            "display_description": "test volume 1", 
+            "display_name": "testvol01", 
+            "id": "", 
+            "metadata": {}, 
+            "size": 200, 
+            "snapshot_id": null, 
+            "source_volid": null, 
+            "status": "available", 
+            "volume_type": "None"
+        }, 
+        {
+            "attachments": [
+                {
+                    "device": "/dev/vdd", 
+                    "id": "", 
+                    "server_id": "", 
+                    "volume_id": ""
+                }
+            ], 
+            "availability_zone": "", 
+            "bootable": "true", 
+            "created_at": "2015-04-21T16:36:19.000000", 
+            "display_description": "test volume 1", 
+            "display_name": "testvol01", 
+            "id": "", 
+            "metadata": {}, 
+            "size": 5, 
+            "snapshot_id": null, 
+            "source_volid": null, 
+            "status": "in-use", 
+            "volume_type": "None"
+        }, 
+        {
+            "attachments": [], 
+            "availability_zone": "", 
+            "bootable": "false", 
+            "created_at": "2015-04-21T14:32:27.000000", 
+            "display_description": null, 
+            "display_name": null, 
+            "id": "", 
+            "metadata": {}, 
+            "size": 2, 
+            "snapshot_id": "", 
+            "source_volid": null, 
+            "status": "available", 
+            "volume_type": "None"
+        }, 
+}

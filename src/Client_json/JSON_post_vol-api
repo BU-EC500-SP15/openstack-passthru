@@ -1,0 +1,8 @@
+  {
+    "volume":{
+        "availability_zone": "", 
+        "size":1,
+        "display_description": "test volume 1", 
+        "display_name": "testvol01"
+    }
+}

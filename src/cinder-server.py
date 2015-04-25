@@ -15,8 +15,8 @@ ten = 'EC500-openstack-passthru'
 authurl = 'http://140.247.152.207:35357/v2.0'
 
 url = {}
-url['MOC1'] = 'x'
-url['MOC2'] = 'y'
+url['MOC1'] = 'http://140.247.152.207:8776/v1/d5785e4393ba4db5871c34b6a6c3ef7b'
+url['MOC2'] = 'http://140.247.152.207:8776/v1/d5785e4393ba4db5871c34b6a6c3ef7b'
 
 
 
@@ -262,6 +262,16 @@ def snap_set_meta(con,snapid,meta): ##########to be modified, now hard coding me
 	else:
 		return "", 204
 
+####getting url for backend:   (needs to be tested afer the authentication. should work)
+def get_URL(sid):
+	for key in url:
+		con = connect_cinder(url[key])
+		try:
+			con.volume_snapshots.get(sid)
+			return url[key]
+		except :
+			pass
+	return "Invalid id."
 
 ##################################################################################################### flask:
 
@@ -275,7 +285,7 @@ def func1(tenid):
 #####POST: curl -X POST http://localhost:5003/v2/EC500-openstack-passthru/volumes -H"Content-Type:application/json" --data-binary @/home/jj/openstack-passthru/src/Client_json/Vol_JSON
 	
         #pdb.set_trace()
-        if  request.method == 'GET':		
+        if  request.method == 'GET':
 		con=connect_cinder()
 		return get_volumes(con)
 	elif request.method == "POST":
@@ -378,12 +388,13 @@ def detail(tenid):
 def func_uid(tenid,sid): 
 
 #####DELETE: curl -X DELETE http://localhost:5003/v2/EC500-openstack-passthru/snapshots/uuid
-#####GET: curl -X GET http://localhost:5003/v2/EC500-openstack-passthru/snapshots/uuid
+#####GET: curl -X GET http://localhost:5003/v2/EC500-openstack-passthru/snapshots/4ebe4c27-97d3-4153-822f-11438f67dcdb
 #####PUT: curl -X PUT http://localhost:5003/v2/EC500-openstack-passthru/snapshots/4ebe4c27-97d3-4153-822f-11438f67dcdb -H "name:testj"
 	if request.method == 'DELETE':
 		con=connect_cinder()
 		return delete_snapshot(con,sid)
 	elif request.method == 'GET':
+		#url = get_URL(sid)
 		con=connect_cinder()
 		return get_snapshot_id(con,sid)
 	elif request.method == 'PUT':###to be implemented

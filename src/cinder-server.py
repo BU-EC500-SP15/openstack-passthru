@@ -14,6 +14,10 @@ pwd=''
 ten = 'EC500-openstack-passthru'
 authurl = 'http://140.247.152.207:35357/v2.0'
 
+url = {}
+url['MOC1'] = 'x'
+url['MOC2'] = 'y'
+
 
 
 def connect_cinder(): #########works
@@ -68,9 +72,9 @@ def get_volumes_detail(con):
 
 
 #####create volume
-def create_volume(con,name1,size1):
+def create_volume(con,size, snapshot_id, source_volid, name, description, volume_type, availability_zone, metadata, imageRef):
 	try:
-		p=str(con.volumes.create(size1,name=name1))
+		p=str(con.volumes.create(size = size, snapshot_id=snapshot_id, source_volid=source_volid, name = name, description = description, volume_type=volume_type, availability_zone=availability_zone, metadata=metadata, imageRef=imageRef))
 		return p,200
 	except exception as e:
 		return e.msg, e.http_status
@@ -123,7 +127,7 @@ def extend_volume(con,volumeid,size):
 def create_snapshot(con,uuid):
 	try:
 		vid=unicode(uuid)
-		print type(vid)
+		#print type(vid)
 		snp=con.volume_snapshots.create(vid,force=True)
 		snap=snp.__dict__
 		return str(snap),202
@@ -268,17 +272,32 @@ app = Flask(__name__)
 @app.route("/v2/<tenid>/volumes", methods=[ 'GET', 'POST'])
 def func1(tenid): 
 #####GET: curl -X GET http://localhost:5003/v2/EC500-openstack-passthru/volumes
-#####POST: curl -X POST http://localhost:5003/v2/EC500-openstack-passthru/volumes -H "Volume-Name:test4" -H "Volume-Size:1"		
+#####POST: curl -X POST http://localhost:5003/v2/EC500-openstack-passthru/volumes -H"Content-Type:application/json" --data-binary @/home/jj/openstack-passthru/src/Client_json/Vol_JSON
+	
         #pdb.set_trace()
         if  request.method == 'GET':		
 		con=connect_cinder()
 		return get_volumes(con)
 	elif request.method == "POST":
 		con=connect_cinder()
-		name=request.headers.get('Volume-Name').encode('ascii','ignore')
-		size=int(request.headers.get('Volume-Size'))
-		print type(name)
-		return 	create_volume(con,name,size)
+		if request.headers['Content-Type']=='application/json':
+			obj = request.get_json()
+			size = obj['volume']['size']
+			name = obj['volume']['name']
+			availability_zone = obj['volume']['availability_zone']
+        		source_volid = obj['volume']['source_volid']
+        		description = obj['volume']['description']
+        		snapshot_id = obj['volume']['snapshot_id']
+        		imageRef = obj['volume']['imageRef']
+        		volume_type = obj['volume']['volume_type']
+        		metadata = copy.deepcopy(obj['volume']['metadata'])
+			#name=request.headers.get('Volume-Name').encode('ascii','ignore')
+			#size=int(request.headers.get('Volume-Size'))
+			#print type(name)
+			#print type(size)
+			return 	create_volume(con,size, snapshot_id, source_volid, name, description, volume_type, availability_zone, metadata, imageRef)
+		else:
+			return "Not supported."
         else:
                 return "No Such Function", 501
 
@@ -315,13 +334,15 @@ def func3(tenid,vid):
 
 @app.route("/v2/<tenid>/volumes/<vid>/action", methods=[ 'POST'])
 def func4(tenid,vid):
-#####curl -X POST http://localhost:5003/v2/EC500-openstack-passthru/volumes/177e0e61-1c66-4454-b170-aafd99fa2c86/action -H "Volume-Size:11"
-
+#####curl -X POST http://localhost:5003/v2/EC500-openstack-passthru/volumes/17a156af-4aaf-4168-a026-853310435368/action -H"Content-Type:application/json" --data-binary @/home/jj/openstack-passthru/src/Client_json/Vol_extend_JSON
 	if request.method == 'POST':
 		con=connect_cinder()
-		size=int(request.headers.get('Volume-Size'))
-		#pdb.set_trace()
-		return extend_volume(con,vid,size);
+		if request.headers['Content-Type']=='application/json':
+			obj = request.get_json()
+			size = int(obj['os-extend']['new_size'])
+			#size=int(request.headers.get('Volume-Size'))
+			pdb.set_trace()
+			return extend_volume(con,vid,size);
 	else:
 		return "No Such Function", 501
 
@@ -331,6 +352,7 @@ def func4(tenid,vid):
 def func5(tenid):
 #####POST: curl -X POST http://localhost:5003/v2/EC500-openstack-passthru/snapshots -H "Volume-id:177e0e61-1c66-4454-b170-aafd99fa2c86"
 #####GET: curl -X GET http://localhost:5003/v2/EC500-openstack-passthru/snapshots 
+
 	if request.method == 'POST':
 		con=connect_cinder()
 		uuid=request.headers.get('Volume-id')

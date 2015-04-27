@@ -34,18 +34,18 @@ def delete_container(con, container):	### for deleting a container from the conn
 		return e.msg, e.http_status
 	else:
                 return "", 204
-def get_container(con, container): ### for listing a container's objects and information.
+def get_container(con, container,mark,end,limit): ### for listing a container's objects and information.
 	try:
-		headers, result = con.get_container(container)
+		headers, result = con.get_container(container,marker = mark,end_marker = end,limit = limit)
 		return Response(json.dumps(result),mimetype='application/json'),200
 	except ClientException as e:
 		return e.msg, e.http_status
 	else:
 		return "", 204
 
-def get_account(con):
+def get_account(con,marker,end,limit):
 	try:
-		headers, result = con.get_account()
+		headers, result = con.get_account(marker = marker,limit = limit,end_marker = end)
 		#print "wetwerewr"
 		#print result
 		#print format(result)
@@ -138,9 +138,7 @@ def head_object(con,container,obj):### show object metadata
                 try:
 			headers=con.head_object(container,obj)
 			return headers,200 #Response(json.dumps(headers),mimetype='application/json'),200
-		except ClientException as e:
-			return e.msg,e.http_status
-		else:
+		except :
 			return "",204
 def Hash(container):
 	c_swift = str(container).split('-')
@@ -169,16 +167,23 @@ app = Flask(__name__)
 
 @app.route("/", methods=['GET', 'POST', 'HEAD'])
 def func1():
+	#pdb.set_trace()
 	if request.method == 'GET':
+		header = request.args
+		for key in header:
+			print key
 		token=request.headers.get('X-Auth-Token')
+		marker = request.args.get('marker')
+		end = request.args.get('end_marker')
+		limit = request.args.get('limit')
 		url =preauthurl_MOC1
 				###needs to be changed
 		urla=preauthurl_MOC2
 		frmt = request.url
-		#print frmt
+		print frmt
 		con= connect_swift(token,url)
 		cona=connect_swift(token,urla)
-		result=(get_account(con))#+(get_account(cona))
+		result=(get_account(con,marker,end,limit))#+(get_account(cona))
 		return result
 			
 	elif request.method=='HEAD':
@@ -227,9 +232,12 @@ def func2(container):
                 return delete_container(con, container)
 	elif request.method == 'GET':
 		token=request.headers.get('X-Auth-Token');
+		marker = request.args.get('marker')
+		end = request.args.get('end_marker')
+		limit = request.args.get('limit')
 		url = Hash(container)
 		con=connect_swift(token,url)
-		return get_container(con, container)
+		return get_container(con, container,marker,end,limit)
 	elif request.method == "POST":
 		token=request.headers.get('X-Auth-Token');
 		url = Hash(container)
@@ -243,7 +251,7 @@ def func2(container):
 	
 	elif request.method=='HEAD':
 		print 'in container HEAD'
-		pdb.set_trace()
+		#pdb.set_trace()
 		token=request.headers.get('X-Auth-Token');
 		url = Hash(container)
 		con=connect_swift(token,url)
@@ -264,6 +272,14 @@ def func3(container, obj):
 		token=request.headers.get('X-Auth-Token');			###method to upload/replace the objects in container.
 		print 'in upload put'
 		#pdb.set_trace()
+		frmt = request.url
+		print frmt
+		args = request.args
+		for key in args:
+			print key
+		header = request.headers
+		for key in header:
+			print key
 		url = Hash(container)
 		con=connect_swift(token,url)
 		objct = request.get_data()
@@ -287,17 +303,28 @@ def func3(container, obj):
 		#pdb.set_trace()
 		token=request.headers.get('X-Auth-Token');
 		url = Hash(container)
+		frmt = request.url
+		print frmt
+		args = request.args
+		for key in args:
+			print key
+		header = request.headers
+		for key in header:
+			print key
 		con=connect_swift(token,url)
 		head,status=head_object(con,container,obj)
+		print type(status)
 		result={}		
 		#result=head
 		#result['Accept-Ranges']=(head['Accept-Ranges'])
-		result['Last-Modified']=(head['last-modified'])
-		result['etag']=(head['etag'])
-		result['X-Object-Meta-Mtime']=(head['x-object-meta-mtime'])
-		result['Date']=(head['date'])
-		print type(result)
-		return "",status,result
+		if(status != 204):
+			result['Last-Modified']=(head['last-modified'])
+			result['etag']=(head['etag'])
+			#result['X-Object-Meta-Mtime']=(head['x-object-meta-mtime'])
+			result['Date']=(head['date'])
+			print type(result)
+			return "",status,result
+		return "",status,head
 	elif request.method == "POST":
 		token = request.headers.get('X-Auth-Token')
 		url = Hash(container)

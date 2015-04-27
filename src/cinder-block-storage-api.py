@@ -71,5 +71,27 @@ def make_version(elem):
     elem.set('updated')
     ...
 
+#########################
+# for multiple back-end #
+#########################
 
+def Hash(volume):       #should change volume to volume.id
+	c_cinder = str(volume).split('-')
+	if c_cinder[0] == 'MOC1':
+		#print 'in 1'
+		return url['MOC1']
+	elif c_cinder[0] == 'MOC2':
+		#print 'in 2'
+		return url['MOC2']
+	else:
+		sm = 0
+		for letters in volume:
+			sm += ord(letters)
+		index = sm % Backends
+		if index == 0: 
+			#print 'in 1'
+			return url['MOC1']
+		elif index == 1:
+			#print 'in 2'
+			return url['MOC2']
 

@@ -1,0 +1,8 @@
+{
+ "snapshot": {
+ "display_name": "test",
+ "display_description": "test snapshot",
+ "volume_id": "[]",
+ "force": true
+ }
+}

@@ -337,6 +337,11 @@ def func1(tenid):
         		imageRef = obj['volume']['imageRef']
         		volume_type = obj['volume']['volume_type']
         		metadata = copy.deepcopy(obj['volume']['metadata'])
+        		display_name= obj['snapshot']['display_name']
+        		display_description= obj['snapshot']['display_description']
+        		volume_id= obj['snapshot']['volume_id']
+        		force= obj['snapshot']['force']
+        		
                 
             ###add multi-back-end choice here###
             if size >= 50:

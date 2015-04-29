@@ -341,7 +341,7 @@ def func1(tenid):
         		display_description= obj['snapshot']['display_description']
         		volume_id= obj['snapshot']['volume_id']
         		force= obj['snapshot']['force']
-        		
+        		key=obj['snapshot']['key']
                 
             ###add multi-back-end choice here###
             if size >= 50:

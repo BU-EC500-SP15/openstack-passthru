@@ -344,7 +344,7 @@ def func1(tenid):
                 cre = create_volume(con,size, snapshot_id, source_volid, name, description, volume_type, availability_zone, metadata, imageRef)
                 label_1 = "url-" + cre
                 return label_1
-            else if size < 50:
+            elif size < 50:
                 cre = create_volume(con,size, snapshot_id, source_volid, name, description, volume_type, availability_zone, metadata, imageRef)
                 label_2 = "url_2-" + cre
                 return label_2

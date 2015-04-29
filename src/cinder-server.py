@@ -312,11 +312,7 @@ def func1(tenid):
         		imageRef = obj['volume']['imageRef']
         		volume_type = obj['volume']['volume_type']
         		metadata = copy.deepcopy(obj['volume']['metadata'])
-        		display_name= obj['snapshot']['display_name']
-        		display_description= obj['snapshot']['display_description']
-        		volume_id= obj['snapshot']['volume_id']
-        		force= obj['snapshot']['force']
-        		key=obj['metadata']['key']
+
                 
             ###add multi-back-end choice here###
             if size >= 50:
@@ -401,7 +397,11 @@ def func5(tenid):
 	token=request.headers.get('X-Auth-Token')
 	if request.method == 'POST':
 		con=con_cinder(token,preauth_url)
-		uuid=request.headers.get('Volume-id')
+		if request.headers['Content-Type']=='application/json':
+			display_name= obj['snapshot']['display_name']
+        		display_description= obj['snapshot']['display_description']
+        		uuid= obj['snapshot']['volume_id']
+        		force= obj['snapshot']['force']
 		return create_snapshot(con,uuid)
 	elif request.method == 'GET':
 		con=con_cinder(token,preauth_url)

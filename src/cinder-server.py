@@ -398,8 +398,8 @@ def func5(tenid):
 	if request.method == 'POST':
 		con=con_cinder(token,preauth_url)
 		if request.headers['Content-Type']=='application/json':
-			display_name= obj['snapshot']['display_name']
-        		display_description= obj['snapshot']['display_description']
+			name= obj['snapshot']['name']
+        		description= obj['snapshot']['description']
         		uuid= obj['snapshot']['volume_id']
         		force= obj['snapshot']['force']
 		return create_snapshot(con,uuid)

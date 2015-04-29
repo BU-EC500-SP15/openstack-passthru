@@ -32,7 +32,7 @@ def connect_cinder_2():
     return con
 
 def con_cinder(token,preauthurl):
-	con= client.Connection(preauthurl=preauthurl ,preauthtoken=token,auth_version='2', retries=10,)
+	con= client.HTTPClient(endpoint_type=preauthurl ,proxy_token=token)
 	return con
 
 from cinderclient import exceptions
@@ -272,12 +272,13 @@ def snap_set_meta(con,snapid,meta): ##########to be modified, now hard coding me
 	else:
 		return "", 204
 
-####getting url for backend:   (needs to be tested afer the authentication. should work)
+	
+####getting url for backend(volumes and snapshots):   
 def get_URL(sid):
 	for key in url:
 		con = connect_cinder(url[key])
 		try:
-			con.volume_snapshots.get(sid)
+			con.volumes.get(sid)
 			return url[key]
 		except :
 			pass
@@ -296,11 +297,11 @@ def func1(tenid):
 	
         #pdb.set_trace()
 	token=request.headers.get('X-Auth-Token')
-    if  request.method == 'GET':
+    	if  request.method == 'GET':
 		con=con_cinder(token,preauth_url)
 		return get_volumes(con)
 	elif request.method == "POST":
-		con=con_cinder(token,preauth_url)
+		#pdb.set_trace()
 		if request.headers['Content-Type']=='application/json':
 			obj = request.get_json()
 			size = obj['volume']['size']
@@ -315,30 +316,22 @@ def func1(tenid):
 
                 
             ###add multi-back-end choice here###
-            if size >= 50:
-                con=con_cinder(token,preauth_url_2)
-                cre = create_volume(con,size, snapshot_id, source_volid, name, description, volume_type, availability_zone, metadata, imageRef)
-                label_1 = "url-" + cre
-                return label_1
-            elif size < 50:
-                cre = create_volume(con,size, snapshot_id, source_volid, name, description, volume_type, availability_zone, metadata, imageRef)
-                label_2 = "url_2-" + cre
-                return label_2
-            else:
-                return "Not supported."
-            else:
+		    	if size >= 50:
+		        	con=connect_cinder()####using the connection without tokens . needs to be changed and pass in url
+		        	return create_volume(con,size, snapshot_id, source_volid, name, description, volume_type, availability_zone, metadata, imageRef)
+		        	
+		    	elif size < 50:
+		    		con=connect_cinder()
+		        	return create_volume(con,size, snapshot_id, source_volid, name, description, volume_type, availability_zone, metadata, imageRef)
+		        	
+		    	
+		    	else:
+		        	return "No Such Function", 501
+            
+		else:
+			return "Not supported."
+        else:
                 return "No Such Function", 501
-            
-            
-			#name=request.headers.get('Volume-Name').encode('ascii','ignore')
-			#size=int(request.headers.get('Volume-Size'))
-			#print type(name)
-			#print type(size)
-#			return 	create_volume(con,size, snapshot_id, source_volid, name, description, volume_type, availability_zone, metadata, imageRef)
-#		else:
-#			return "Not supported."
-#        else:
-#                return "No Such Function", 501
 
 
 
@@ -396,6 +389,7 @@ def func5(tenid):
 #####GET: curl -X GET http://localhost:5003/v2/EC500-openstack-passthru/snapshots 
 	token=request.headers.get('X-Auth-Token')
 	if request.method == 'POST':
+		preauth_url = get_URL(uuid)
 		con=con_cinder(token,preauth_url)
 		if request.headers['Content-Type']=='application/json':
 			obj = request.get_json()
@@ -473,5 +467,4 @@ def func6(tenid,snapid):
 
 if __name__ == "__main__":
         app.run(None,5003,True)
-Status API Training Shop Blog About
-© 2015 GitHub, Inc. Terms Privacy Security Contact
+

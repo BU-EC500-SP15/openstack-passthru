@@ -398,6 +398,7 @@ def func5(tenid):
 	if request.method == 'POST':
 		con=con_cinder(token,preauth_url)
 		if request.headers['Content-Type']=='application/json':
+			obj = request.get_json()
 			name= obj['snapshot']['name']
         		description= obj['snapshot']['description']
         		uuid= obj['snapshot']['volume_id']

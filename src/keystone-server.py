@@ -22,16 +22,16 @@ def connect_keystone(usr,key,ten):			###get authentication token for POST comman
 
 #from keystoneclient.v2_0 import ClientException
 
-def redirect(con):			###redirect the keystone endpoints to our proxy servers.
+def redirect(con,ten):			###redirect the keystone endpoints to our proxy servers.
 	key =copy.deepcopy(con.auth_ref)
-	print str(key)
+	#print str(key)
 	token = {}
 	token['access'] = {}
 	token['access']['token'] = key['token']
 	token['access']['version'] = key['version']
 	token['access']['serviceCatalog'] = []
 	for val in key['serviceCatalog']:
-		if (val['name']=='keystone')or(val['name']=='swift'):
+		if (val['name']=='keystone')or(val['name']=='swift')or(val['name']=='cinderv2'):
 			token['access']['serviceCatalog'] .append(val)
 	for val in token['access']['serviceCatalog']:
 		if(val['name']=='keystone'):
@@ -42,10 +42,14 @@ def redirect(con):			###redirect the keystone endpoints to our proxy servers.
 			val['endpoints'][0]['publicURL'] = 'http://localhost:5001'
 			val['endpoints'][0]['internalURL'] = 'http://localhost:5001'
 			val['endpoints'][0]['adminURL'] = 'http://localhost:5001'
+		elif(val['name']=='cinderv2'):
+			val['endpoints'][0]['publicURL'] = 'http://localhost:5003/v2/'+str(ten)
+			val['endpoints'][0]['internalURL'] = 'http://localhost:5003/v2/'+str(ten)
+			val['endpoints'][0]['adminURL'] = 'http://localhost:5003/v2/'+str(ten)
 	token['access']['user'] = key['user']
 	token['access']['metadata'] = key['metadata']	
 	#print token['serviceCatalog']
-	#print str(token)
+	print str(token)
 	return token	
 		
 	
@@ -67,7 +71,7 @@ def token():
 			key = obj['auth']['passwordCredentials']['password']
 			ten = obj['auth']['tenantName']
 			con = connect_keystone(usr,key,ten)
-			token = redirect(con)
+			token = redirect(con,ten)
 			rsp =  Response(json.dumps(token),mimetype='application/json')
 			rsp.headers['Vary']= 'X-Auth-Token'
 			return rsp

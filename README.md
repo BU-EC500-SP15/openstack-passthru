@@ -13,7 +13,8 @@ Environment setup:
   
                 http://flask.pocoo.org/docs/0.10/installation/#installation
   
-  use commands: 
+  use commands:
+  
                 $ sudo apt-get install python-virtualenv
                 $ mkdir myproject
                 $ cd myproject

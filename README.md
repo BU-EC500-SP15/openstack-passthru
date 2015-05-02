@@ -13,7 +13,7 @@ Environment setup:
   
                 http://flask.pocoo.org/docs/0.10/installation/#installation
   
-  use commands:
+  Use commands:
   
                 $ sudo apt-get install python-virtualenv
                 $ mkdir myproject
@@ -26,9 +26,9 @@ Environment setup:
                 $ pip install python-swiftclient
                 $ pip install python-cinderclient
                 
-4)Make a ssh pubic key and have it registered with MOC.
+4) Make a ssh pubic key and have it registered with MOC.
 
-5)Follow the guide lines on the following page to set up proxy settings.
+5) Follow the guide lines on the following page to set up proxy settings.
   
   https://github.com/CCI-MOC/moc-public/wiki/Access-the-OpenStack-dashboard
   
@@ -50,15 +50,15 @@ Environment setup:
     Under the heading [ProxyList]
     Change socks4 127.0.0.1 9050 to socks5 127.0.0.1 $SOCKS_PORT_NUMBER (thats the port number you specified in the proxy settings.)
     
-7)Download the code from github: https://github.com/BU-EC500-SP15/openstack-passthru.git
+7) Download the code from github: https://github.com/BU-EC500-SP15/openstack-passthru.git
 
-8)In order to run the files use the following commands in the virtual enviornment($ . venv/bin/activate):
+8) In order to run the files use the following commands in the virtual enviornment($ . venv/bin/activate):
   
     $ proxychains python swift-server.py (in a different terminal/tab)
     $ proxychains python keystone-server.py(in a different terminal/tab)
     $ proxychains python cinder-server.py(in a different terminal/tab)
   
-9)To test use the curl HTTP requests or the bash variables in the commands folder.:
+9) To test use the curl HTTP requests or the bash variables in the commands folder.:
   
   To test HTTP:
   

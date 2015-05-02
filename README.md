@@ -11,16 +11,13 @@ Environment setup:
 
 3) Insatll python virtual environment, follow the guide lines on the following page:
   
-    http://flask.pocoo.org/docs/0.10/installation/#installation
+                http://flask.pocoo.org/docs/0.10/installation/#installation
   
   use commands: 
                 $ sudo apt-get install python-virtualenv
                 $ mkdir myproject
                 $ cd myproject
                 $ virtualenv venv
-                New python executable in venv/bin/python
-                Installing distribute............done.
-                
                 $ . venv/bin/activate
                 $ pip install Flask
                 $ pip install keystone
@@ -34,9 +31,9 @@ Environment setup:
   
   https://github.com/CCI-MOC/moc-public/wiki/Access-the-OpenStack-dashboard
   
-  port number can be changed as per the user.
+  Port number can be changed as per the user.
   
-  use the following command for SSH Port Forwarding to get access to the SSH-Gateway:(have this running in a seprate terminal in order to access MOC)
+  Use the following command for SSH Port Forwarding to get access to the SSH-Gateway:(have this running in a seprate terminal in order to access MOC)
     
     $ ssh -D $SOCKS_PORT_NUMBER $BU_USERNAME@140.247.152.200 -N  
     use the same port number as in the proxy settings and the user name after regestring with MOC.
@@ -56,9 +53,9 @@ Environment setup:
 
 8)In order to run the files use the following commands in the virtual enviornment($ . venv/bin/activate):
   
-  $ proxychains python swift-server.py (in a different terminal/tab)
-  $ proxychains python keystone-server.py(in a different terminal/tab)
-  $ proxychains python cinder-server.py(in a different terminal/tab)
+    $ proxychains python swift-server.py (in a different terminal/tab)
+    $ proxychains python keystone-server.py(in a different terminal/tab)
+    $ proxychains python cinder-server.py(in a different terminal/tab)
   
 9)To test use the curl HTTP requests or the bash variables in the commands folder.:
   

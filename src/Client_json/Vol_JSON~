@@ -5,7 +5,7 @@
         "description": "test volume",
         "snapshot_id": null,
         "size": 1,
-        "name": "test1",
+        "name": "test",
         "imageRef": null,
         "volume_type": null,
         "metadata": {}

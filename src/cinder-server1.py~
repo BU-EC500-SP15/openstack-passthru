@@ -356,7 +356,7 @@ def func4(tenid,vid):
 #####curl -X POST http://localhost:5003/v2/EC500-openstack-passthru/volumes/17a156af-4aaf-4168-a026-853310435368/action -H"Content-Type:application/json" --data-binary @/home/yisi/openstack-passthru/src/Client_json/Vol_extend_JSON
 	token=request.headers.get('X-Auth-Token')
 	if request.method == 'POST':
-		con=connect_cinder()
+		con=connection_cinder()
 		if request.headers['Content-Type']=='application/json':
 			obj = request.get_json()
 			size = int(obj['os-extend']['new_size'])

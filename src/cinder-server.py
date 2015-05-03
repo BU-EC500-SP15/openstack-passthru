@@ -9,8 +9,8 @@ import copy
 #cinderurl= 'http://10.31.27.207:8776/v2/d5785e4393ba4db5871c34b6a6c3ef7b'
 
 version='2'
-uname=''
-pwd=''
+uname='estherlu'
+pwd='123321123'
 ten = 'EC500-openstack-passthru'
 authurl = 'http://140.247.152.207:35357/v2.0'
 authurl_2 = 'http://140.247.152.207:35357/v2.0'       #smae to authurl1 but give a choice #+++
@@ -44,10 +44,10 @@ def get_volumes(con):
 		vlist=con.volumes.list()
 		#print vlist[1]
 		#print vlist[0].__dict__
-		#pdb.set_trace()
+		##pdb.set_trace()
 		result = {}
 		result['volumes']=[]
-		#pdb.set_trace()
+		##pdb.set_trace()
 		for i in range(len(vlist)):
 			vdict=(vlist[i].__dict__)
 			vol = {} #vol=[]
@@ -216,7 +216,7 @@ def get_snapshot_id(con,snapid):
 #####update snapshot by its uuid
 def updates_snapshot(con,snapid,update):
 	try:
-		pdb.set_trace()
+		#pdb.set_trace()
 		sid=unicode(snapid)
 		snap=con.volume_snapshots.get(sid)
 		con.volume_snapshots.update(snap,update)
@@ -295,13 +295,13 @@ def func1(tenid):
 #####GET: curl -X GET http://localhost:5003/v2/EC500-openstack-passthru/volumes
 #####POST: curl -X POST http://localhost:5003/v2/EC500-openstack-passthru/volumes -H"Content-Type:application/json" --data-binary @/home/jj/openstack-passthru/src/Client_json/Vol_JSON
 	
-        #pdb.set_trace()
-	token=request.headers.get('X-Auth-Token')
+        ##pdb.set_trace()
+	#token=request.headers.get('X-Auth-Token')
     	if  request.method == 'GET':
-		con=con_cinder(token,preauth_url)
+		con=connect_cinder()
 		return get_volumes(con)
 	elif request.method == "POST":
-		#pdb.set_trace()
+		##pdb.set_trace()
 		if request.headers['Content-Type']=='application/json':
 			obj = request.get_json()
 			size = obj['volume']['size']
@@ -340,7 +340,7 @@ def func2(tenid):
 #####GET: curl -X GET http://localhost:5003/v2/EC500-openstack-passthru/volumes/detail
 	token=request.headers.get('X-Auth-Token')
 	if request.method == 'GET':
-		con=con_cinder(token,preauth_url)
+		con=connect_cinder()
 		return get_volumes_detail(con)
 	else:
 		return "No Such Function", 501
@@ -353,13 +353,13 @@ def func3(tenid,vid):
 #####DELETE: curl -X DELETE http://localhost:5003/v2/EC500-openstack-passthru/volumes/uuid
 	token=request.headers.get('X-Auth-Token')
 	if request.method == 'GET':
-		con=con_cinder(token,preauth_url)
+		con=connect_cinder()
 		return get_a_volume(con,vid)
 	elif request.method == 'PUT':###to be implemented
-		con=con_cinder(token,preauth_url)
+		con=connect_cinder()
 		return 'not yet'
 	elif request.method == 'DELETE':
-		con=con_cinder(token,preauth_url)
+		con=connect_cinder()
 		return delete_volume(con,vid)
 	else:
 		return "No Such Function", 501
@@ -368,15 +368,16 @@ def func3(tenid,vid):
 
 @app.route("/v2/<tenid>/volumes/<vid>/action", methods=[ 'POST'])
 def func4(tenid,vid):
-#####curl -X POST http://localhost:5003/v2/EC500-openstack-passthru/volumes/17a156af-4aaf-4168-a026-853310435368/action -H"Content-Type:application/json" --data-binary @/home/jj/openstack-passthru/src/Client_json/Vol_extend_JSON
+#####curl -X POST http://localhost:5003/v2/EC500-openstack-passthru/volumes/17a156af-4aaf-4168-a026-853310435368/action -H "Volume-Size: 13"
+#-H"Content-Type:application/json" --data-binary @/home/yisi/openstack-passthru/src/Client_json/Vol_extend_JSON
 	token=request.headers.get('X-Auth-Token')
 	if request.method == 'POST':
-		con=con_cinder(token,preauth_url)
+		con=connect_cinder()
 		if request.headers['Content-Type']=='application/json':
 			obj = request.get_json()
-			size = int(obj['os-extend']['new_size'])
-			#size=int(request.headers.get('Volume-Size'))
-			pdb.set_trace()
+			#size = int(obj['os-extend']['new_size'])
+			size=int(request.headers.get('Volume-Size'))
+			#pdb.set_trace()
 			return extend_volume(con,vid,size);
 	else:
 		return "No Such Function", 501
@@ -385,21 +386,22 @@ def func4(tenid,vid):
 
 @app.route("/v2/<tenid>/snapshots", methods=['POST', 'GET'])
 def func5(tenid):
-#####POST: curl -X POST http://localhost:5003/v2/EC500-openstack-passthru/snapshots -H "Volume-id:177e0e61-1c66-4454-b170-aafd99fa2c86"
+#####POST: curl -X POST http://localhost:5003/v2/EC500-openstack-passthru/snapshots -H "Volume-id:17a156af-4aaf-4168-a026-853310435368"
 #####GET: curl -X GET http://localhost:5003/v2/EC500-openstack-passthru/snapshots 
 	token=request.headers.get('X-Auth-Token')
 	if request.method == 'POST':
-		preauth_url = get_URL(uuid)
-		con=con_cinder(token,preauth_url)
+		#preauth_url = get_URL(uuid)
+		con=connect_cinder()
 		if request.headers['Content-Type']=='application/json':
 			obj = request.get_json()
 			name= obj['snapshot']['name']
         		description= obj['snapshot']['description']
         		uuid= obj['snapshot']['volume_id']
         		force= obj['snapshot']['force']
+		uuid=request.headers.get("Volume-id")
 		return create_snapshot(con,uuid)
 	elif request.method == 'GET':
-		con=con_cinder(token,preauth_url)
+		con=connect_cinder()
 		return get_snapshots(con)
 	else:
 		return "No Such Function", 501
@@ -409,7 +411,7 @@ def detail(tenid):
 #####GET: curl -X GET http://localhost:5003/v2/EC500-openstack-passthru/snapshots/detail
 	token=request.headers.get('X-Auth-Token')
 	if request.method == 'GET':
-		con=con_cinder(token,preauth_url)
+		con=connect_cinder()
 		return get_snapshots_detail(con)
 	else:
 		return "No Such Function", 501
@@ -420,17 +422,17 @@ def func_uid(tenid,sid):
 
 #####DELETE: curl -X DELETE http://localhost:5003/v2/EC500-openstack-passthru/snapshots/uuid
 #####GET: curl -X GET http://localhost:5003/v2/EC500-openstack-passthru/snapshots/4ebe4c27-97d3-4153-822f-11438f67dcdb
-#####PUT: curl -X PUT http://localhost:5003/v2/EC500-openstack-passthru/snapshots/4ebe4c27-97d3-4153-822f-11438f67dcdb -H "name:testj"
+#####PUT: curl -X PUT http://localhost:5003/v2/EC500-openstack-passthru/snapshots/4ebe4c27-97d3-4153-822f-11438f67dcdb -H "name:testk"
 	token=request.headers.get('X-Auth-Token')
 	if request.method == 'DELETE':
-		con=con_cinder(token,preauth_url)
+		con=connect_cinder()
 		return delete_snapshot(con,sid)
 	elif request.method == 'GET':
 		#url = get_URL(sid)
-		con=con_cinder(token,preauth_url)
+		con=connect_cinder()
 		return get_snapshot_id(con,sid)
 	elif request.method == 'PUT':###to be implemented
-		con=con_cinder(token,preauth_url)
+		con=connect_cinder()
 		head = request.headers
 		headers = {}
 		for key in head:
@@ -450,10 +452,10 @@ def func6(tenid,snapid):
 #####PUT: 
 	token=request.headers.get('X-Auth-Token')
 	if request.method == 'GET':
-		con=con_cinder(token,preauth_url)
+		con=connect_cinder()
 		return get_snap_meta(con,snapid)
 	elif request.method == 'PUT':###to be implemented
-		con=con_cinder(token,preauth_url)
+		con=connect_cinder()
 		meta=request.headers.get('Metadata')#format:{"metadata": "v2"}
 		return snap_set_meta(con,snapid,meta)
 	else:

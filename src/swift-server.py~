@@ -223,7 +223,7 @@ def func2(container):
         if request.method == 'PUT':
 		token=request.headers.get('X-Auth-Token');
                 url = Hash(container)
-		#pdb.set_trace()
+		pdb.set_trace()
 		con=connect_swift(token,url)
                 return create_container(con, container)
         elif request.method == 'DELETE':

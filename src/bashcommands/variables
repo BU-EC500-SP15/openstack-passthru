@@ -1,0 +1,5 @@
+export OS_USERNAME=singh1
+export OS_PASSWORD=JRARJNS3
+export OS_TENANT_NAME=EC500-openstack-passthru
+export OS_AUTH_URL=http://localhost:5002/v2.0 
+

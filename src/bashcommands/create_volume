@@ -1,0 +1,1 @@
+curl -X POST http://localhost:5003/v2/EC500-openstack-passthru/volumes -H"Content-Type:application/json" --data-binary @/home/yisi/openstack-passthru/src/Client_json/Vol_JSON

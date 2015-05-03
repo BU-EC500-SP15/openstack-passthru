@@ -1,0 +1,1 @@
+curl -X GET http://localhost:5003/v2/EC500-openstack-passthru/snapshots/73e2b7a5-8e96-47db-854a-5c8a71deeaba

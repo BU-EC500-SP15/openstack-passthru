@@ -68,6 +68,8 @@ Environment setup:
  
   Use commands in a different terminal
   Followed by swift commandline commands - swift list,swift stat, etc.
+
+10) You can find our demo video for the project on https://www.youtube.com/watch?v=1LumGZYtAlQ
   
 HAPPY RUNNING!!!!
   
